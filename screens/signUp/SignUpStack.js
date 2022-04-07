@@ -27,11 +27,6 @@ function SignUpStack() {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="GetAge"
-          component={GetAge}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
           name="GetHeightWeight"
           component={GetHeightWeight}
           options={{headerShown: false}}
@@ -95,7 +90,7 @@ function GetNickname({navigation}) {
     sendNickname()
       .then(() => {
         // 닉네임 중복 X - 키몸무게 입력 화면으로 이동
-        navigation.navigate('GetAge');
+        navigation.navigate('GetHeightWeight');
       })
       .catch(() => {
         // 닉네임 중복 O - 노티 메시지 띄우기
@@ -104,18 +99,6 @@ function GetNickname({navigation}) {
   return (
     <InputScreen>
       <SignUpInput field="nickname" placeholder="닉네임" />
-      <CustomBtn title="다음" onPress={onPress} />
-    </InputScreen>
-  );
-}
-
-function GetAge({navigation}) {
-  const onPress = () => {
-    navigation.navigate('GetHeightWeight');
-  };
-  return (
-    <InputScreen>
-      <SignUpInput field="age" placeholder="나이" />
       <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );
