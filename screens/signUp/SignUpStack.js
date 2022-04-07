@@ -1,15 +1,16 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useContext} from 'react';
 import SignUpInput from './SignUpInput';
 import InputScreen from '../InputScreen';
 import CustomBtn from '../../components/CustomBtn';
 import {SignUpContextProvider} from '../../contexts/SignUpContext';
+import SignUpContext from '../../contexts/SignUpContext';
 
 function SignUpStack() {
   const Stack = createNativeStackNavigator();
   return (
     <SignUpContextProvider>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="GetId">
         <Stack.Screen
           name="GetId"
           component={GetId}
@@ -23,6 +24,11 @@ function SignUpStack() {
         <Stack.Screen
           name="GetNickname"
           component={GetNickname}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="GetAge"
+          component={GetAge}
           options={{headerShown: false}}
         />
         <Stack.Screen
@@ -43,13 +49,17 @@ function SignUpStack() {
 export default SignUpStack;
 
 function GetId({navigation}) {
+  const {sendId} = useContext(SignUpContext);
+
   const onPress = () => {
-    // 서버로 아이디 전송
-
-    // 아이디 중복 X - 비밀번호 입력 화면으로 이동
-    navigation.navigate('GetPassword');
-
-    // 아이디 중복 O - 노티 메시지 띄우기
+    sendId()
+      .then(() => {
+        // 아이디 중복 X - 비밀번호 입력 화면으로 이동
+        navigation.navigate('GetPassword');
+      })
+      .catch(() => {
+        // 아이디 중복 O - 노티 메시지 띄우기
+      });
   };
   return (
     <InputScreen>
@@ -79,17 +89,33 @@ function GetPassword({navigation}) {
 }
 
 function GetNickname({navigation}) {
+  const {sendNickname} = useContext(SignUpContext);
+
   const onPress = () => {
-    // 서버로 닉네임 전송
-
-    // 닉네임 중복 X - 키몸무게 입력 화면으로 이동
-    navigation.navigate('GetHeightWeight');
-
-    // 닉네임 중복 O - 노티 메시지 띄우기
+    sendNickname()
+      .then(() => {
+        // 닉네임 중복 X - 키몸무게 입력 화면으로 이동
+        navigation.navigate('GetAge');
+      })
+      .catch(() => {
+        // 닉네임 중복 O - 노티 메시지 띄우기
+      });
   };
   return (
     <InputScreen>
       <SignUpInput field="nickname" placeholder="닉네임" />
+      <CustomBtn title="다음" onPress={onPress} />
+    </InputScreen>
+  );
+}
+
+function GetAge({navigation}) {
+  const onPress = () => {
+    navigation.navigate('GetHeightWeight');
+  };
+  return (
+    <InputScreen>
+      <SignUpInput field="age" placeholder="나이" />
       <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );
@@ -109,10 +135,16 @@ function GetHeightWeight({navigation}) {
 }
 
 function GetPhoto({navigation}) {
+  const {signUp} = useContext(SignUpContext);
+
   const onPress = () => {
     // 서버로 모든 데이터 전송
-    // 응답 성공 시 Main으로 화면 이동
-    navigation.navigate('Main');
+    signUp()
+      .then(() => {
+        // 응답 성공 시 Main으로 화면 이동
+        navigation.navigate('Main');
+      })
+      .catch(() => {});
   };
   return (
     <InputScreen>
