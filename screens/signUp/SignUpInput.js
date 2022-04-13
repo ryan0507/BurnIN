@@ -1,9 +1,10 @@
 import React, {useContext} from 'react';
-import {TextInput} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import SignUpContext from '../../contexts/SignUpContext';
 import UnderlinedInput from '../../components/UnderlinedInput';
+import CustomSmallBtn from '../../components/CustomSmallBtn';
 
-function SignUpInput({field, isPhoto, ...rest}) {
+function SignUpInput({field, getPhoto, placeholder, smallBtn, ...rest}) {
   // 사용자가 입력한 값을 지정한 필드에 저장
 
   const {form, createChangeTextHandler} = useContext(SignUpContext);
@@ -11,14 +12,31 @@ function SignUpInput({field, isPhoto, ...rest}) {
   const value = form[field];
 
   return (
-    <>
-      {isPhoto ? (
-        <TextInput /> // 사진 입력용 Input
-      ) : (
-        <UnderlinedInput {...rest} onChangeText={onChangeText} value={value} />
-      )}
-    </>
+    <View style={styles.block}>
+      <Text style={styles.text}>{placeholder}</Text>
+      <UnderlinedInput
+        placeholder={placeholder}
+        onChangeText={onChangeText}
+        value={value}
+        {...rest}
+      />
+      {smallBtn && <CustomSmallBtn title="중복 확인" />}
+    </View>
   );
 }
 
 export default SignUpInput;
+
+const styles = StyleSheet.create({
+  block: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginRight: 10,
+  },
+});

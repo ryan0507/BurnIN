@@ -24,7 +24,19 @@ function RootStack() {
       <Stack.Screen
         name="SignUp"
         component={SignUpStack}
-        options={{headerShown: false}}
+        options={{
+          title: '회원가입',
+          headerBackVisible: false,
+          headerStyle: {
+            backgroundColor: '#EF9917',
+          },
+          headerTitleAlign: 'center',
+          headerTintColor: '#ffffff',
+          headerTitleStyle: {
+            fontWeight: '600',
+            fontSize: 24,
+          },
+        }}
       />
       <Stack.Screen
         name="MainTab"

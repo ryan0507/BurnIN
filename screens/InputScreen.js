@@ -17,8 +17,10 @@ const styles = StyleSheet.create({
   block: {
     flex: 1,
     alignItems: 'center',
-    // justifyContent: 'space-around',
-    paddingHorizontal: 16,
+    paddingHorizontal: 40,
+    paddingVertical: 50,
+    backgroundColor: '#ffffff',
+    // backgroundColor: 'blue',
   },
   logo: {
     fontSize: 32,

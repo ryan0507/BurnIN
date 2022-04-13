@@ -34,17 +34,16 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   wrapper: {
-    borderRadius: 4,
-    height: 36,
+    borderRadius: 10,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: '#ffc246',
+    backgroundColor: '#ef9917',
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 14,
-    color: '#ff9100',
-    // color: 'white',
+    fontSize: 16,
+    color: '#ffffff',
   },
   margin: {
     marginBottom: 8,
