@@ -125,7 +125,7 @@ function GetPhoto({navigation}) {
     signUp()
       .then(() => {
         // 응답 성공 시 Main으로 화면 이동
-        navigation.navigate('Main');
+        navigation.navigate('MainTab');
       })
       .catch(() => {});
   };

@@ -1,9 +1,9 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import WorkOutScreen from './WorkOutScreen';
-import RaceScreen from './RaceScreen';
-import DashboardScreen from './DashboardScreen';
-import ProfileScreen from './ProfileScreen';
+import WorkOutScreen from '../screens/main/WorkOutScreen';
+import RaceScreen from '../screens/main/RaceScreen';
+import DashboardScreen from '../screens/main/DashboardScreen';
+import ProfileScreen from '../screens/main/ProfileScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Tab = createBottomTabNavigator();

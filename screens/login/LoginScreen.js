@@ -11,7 +11,8 @@ function LoginScreen({navigation}) {
 
   const onPress = () => {
     const form = {id, password};
-    login(form);
+    // login(form);
+    navigation.navigate('MainTab');
   };
 
   return (

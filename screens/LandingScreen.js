@@ -9,7 +9,7 @@ function LandingScreen({navigation}) {
     loginStorages
       .get()
       .then(() => {
-        navigation.navigate('Main');
+        navigation.navigate('MainTab');
       })
       .catch(error => {
         console.log(error);
