@@ -10,7 +10,7 @@ function RootStack() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator initialRouteName="RunStack">
+    <Stack.Navigator initialRouteName="Landing">
       <Stack.Screen
         name="Landing"
         component={LandingScreen}

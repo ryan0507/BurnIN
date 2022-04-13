@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {View, Text, Button} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
@@ -6,6 +6,9 @@ import {useNavigation} from '@react-navigation/native';
 
 function WorkOutScreen() {
   const navigation = useNavigation();
+  const lat = useRef(0);
+  const lon = useRef(0);
+
   const getLocation = async () => {
     const locationPermission = await hasPermission();
     if (!locationPermission) {
@@ -14,6 +17,8 @@ function WorkOutScreen() {
     Geolocation.getCurrentPosition(
       position => {
         console.log(position);
+        lat.current = position.coords.latitude;
+        lon.current = position.coords.longitude;
       },
       error => {
         console.log(error);
@@ -43,7 +48,10 @@ function WorkOutScreen() {
       <Button
         title="run"
         onPress={() => {
-          navigation.navigate('RunStack');
+          navigation.navigate('RunStack', {
+            screen: 'RunningScreen',
+            params: {lat: lat.current, lon: lon.current},
+          });
         }}
       />
     </View>

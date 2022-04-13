@@ -4,12 +4,16 @@ import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import Moment from 'react-moment';
 import {useNavigation} from '@react-navigation/native';
+import {calCalories, calDistance} from '../../modules/Calculations';
 
-function RunningScreen() {
+function RunningScreen({route}) {
+  const watchId = useRef(null);
   const realtime = useRef(0);
+  const currentLat = useRef(route.params.lat);
+  const currentLon = useRef(route.params.lon);
   const [currentPace, setCurrentPace] = useState('-\'--"');
   const [calories, setCalories] = useState('--');
-  const [distance, setDistance] = useState(0);
+  const [totalDist, setTotalDist] = useState(0);
 
   const nowTime = Date.now();
   const navigation = useNavigation();
@@ -23,9 +27,21 @@ function RunningScreen() {
     if (!locationPermission) {
       return;
     }
-    Geolocation.watchPosition(
+    watchId.current = Geolocation.watchPosition(
       position => {
         console.log(position);
+        // 30초 단위로
+
+        // 페이스 업데이트
+        // 소모 칼로리 업데이트
+        setCalories(calCalories(52, nowTime.current)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
+        // 거리 계산해서 업데이트
+        const newLat = position.coords.latitude;
+        const newLon = position.coords.longitude;
+        setTotalDist(calDistance(currentLat, currentLon, newLat, newLon));
+        currentLat.current = newLat;
+        currentLon.current = newLon;
+        console.log(totalDist);
       },
       error => {
         console.log(error);
@@ -36,7 +52,7 @@ function RunningScreen() {
         },
         enableHighAccuracy: true,
         distanceFilter: 0,
-        interval: 30000,
+        interval: 1000,
         fastestInterval: 2000,
         forceRequestLocation: true,
         forceLocationManager: true,
@@ -73,7 +89,7 @@ function RunningScreen() {
         </View>
       </View>
       <View>
-        <Text>{distance}킬로미터</Text>
+        <Text>{totalDist}킬로미터</Text>
       </View>
       <Button
         title="pause"
