@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import loginStorages from '../../storages/loginStorages';
 import LoginBtn from '../../components/LoginBtn';
 import InputScreen from '../InputScreen';
 import UnderlinedInput from '../../components/UnderlinedInput';
 import {login} from '../../modules/auth';
 import {View, Text, StyleSheet} from 'react-native';
+import loginStorages from '../../storages/loginStorages';
 
 function LoginScreen({navigation}) {
   const [id, setId] = useState('');
@@ -12,8 +12,10 @@ function LoginScreen({navigation}) {
 
   const onPress = () => {
     const form = {id, password};
-    login(form);
-    navigation.navigate('MainTab');
+    login(form).then(() => {
+      console.log(loginStorages.get());
+      navigation.navigate('MainTab');
+    });
   };
 
   return (

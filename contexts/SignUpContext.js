@@ -1,15 +1,14 @@
+/* eslint-disable */
 import React from 'react';
 import {createContext, useState} from 'react';
 import axios from 'axios';
+import userStorages from '../storages/userStorages';
 
 const SignUpContext = createContext();
 export function SignUpContextProvider({children}) {
   const [form, setForm] = useState({
-    id: '',
-    password: '',
-    confirmPassword: '',
     nickname: '',
-    age: '',
+    password: '',
     height: '',
     weight: '',
     photo: '',
@@ -19,17 +18,9 @@ export function SignUpContextProvider({children}) {
     setForm({...form, [name]: value});
   };
 
-  const sendId = async () => {
-    try {
-      await axios.post('/signUp/id', form.userId);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const sendNickname = async () => {
     try {
-      axios.post('/signUp/nickname', form.nickname);
+      const res = await axios.post('/signUp/nickname', form.nickname);
     } catch (e) {
       console.log(e);
     }
@@ -37,7 +28,12 @@ export function SignUpContextProvider({children}) {
 
   const signUp = async () => {
     try {
-      axios.post('/signUp', form);
+      const res = await axios.post('/signUp', form);
+
+      // save token at loginStorage
+
+      // save user info at userStorage
+      userStorages.set(form);
     } catch (e) {
       console.log(e);
     }
@@ -45,7 +41,7 @@ export function SignUpContextProvider({children}) {
 
   return (
     <SignUpContext.Provider
-      value={{form, createChangeTextHandler, sendId, sendNickname, signUp}}>
+      value={{form, createChangeTextHandler, sendNickname, signUp}}>
       {children}
     </SignUpContext.Provider>
   );
