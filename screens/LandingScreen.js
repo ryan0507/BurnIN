@@ -5,17 +5,17 @@ import loginStorages from '../storages/loginStorages';
 function LandingScreen({navigation}) {
   // AsyncStorage 확인
   // token 있으면 메인 페이지로 이동, 없으면 로그인 페이지로 이동
-  // useEffect(() => {
-  //   loginStorages
-  //     .get()
-  //     .then(() => {
-  //       navigation.navigate('MainTab');
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       navigation.navigate('Login');
-  //     });
-  // }, [navigation]);
+  useEffect(() => {
+    loginStorages
+      .get()
+      .then(() => {
+        navigation.navigate('MainTab');
+      })
+      .catch(error => {
+        console.log(error);
+        navigation.navigate('Login');
+      });
+  }, [navigation]);
 
   return (
     <ImageBackground
