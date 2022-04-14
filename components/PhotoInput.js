@@ -1,7 +1,8 @@
 import React, {useState, useContext} from 'react';
-import {View, Pressable, StyleSheet, Platform, Image} from 'react-native';
+import {View, Text, Pressable, StyleSheet, Platform, Image} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import SignUpContext from '../contexts/SignUpContext';
+import CustomSmallBtn from './CustomSmallBtn';
 
 function PhotoInput() {
   const [response, setResponse] = useState();
@@ -20,15 +21,14 @@ function PhotoInput() {
           return;
         }
         setResponse(res);
-        onChange(response.assets);
+        onChange(res);
       },
     );
   };
   return (
     <View style={styles.block}>
-      <Pressable onPress={onSelectImage}>
-        <Image style={styles.photo} source={{uri: response?.assets[0]?.uri}} />
-      </Pressable>
+      <Image style={styles.photo} source={{uri: response?.assets[0]?.uri}} />
+      <CustomSmallBtn onPress={onSelectImage} title="사진 선택" />
     </View>
   );
 }
@@ -36,11 +36,15 @@ function PhotoInput() {
 export default PhotoInput;
 
 const styles = StyleSheet.create({
-  block: {},
+  block: {
+    alignItems: 'center',
+    marginBottom: 28,
+  },
   photo: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    marginBottom: 14,
     backgroundColor: 'rgba(239,153,23,0.65)',
   },
 });

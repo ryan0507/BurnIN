@@ -15,14 +15,16 @@ function SignUpInput({field, getPhoto, placeholder, smallBtn, ...rest}) {
   return (
     <View style={styles.block}>
       {getPhoto && <PhotoInput />}
-      <Text style={styles.text}>{placeholder}</Text>
-      <UnderlinedInput
-        placeholder={placeholder}
-        onChangeText={onChangeText}
-        value={value}
-        {...rest}
-      />
-      {smallBtn && <CustomSmallBtn title="중복 확인" />}
+      <View style={styles.innerBlock}>
+        <Text style={styles.text}>{placeholder}</Text>
+        <UnderlinedInput
+          placeholder={placeholder}
+          onChangeText={onChangeText}
+          value={value}
+          {...rest}
+        />
+        {smallBtn && <CustomSmallBtn title="중복 확인" marginLeft />}
+      </View>
     </View>
   );
 }
@@ -31,6 +33,9 @@ export default SignUpInput;
 
 const styles = StyleSheet.create({
   block: {
+    alignItems: 'center',
+  },
+  innerBlock: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
