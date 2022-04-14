@@ -13,22 +13,24 @@ function MainTab() {
     <Tab.Navigator
       screenOptions={{
         showLabel: false,
-      }}>
-      <Tab.Screen
-        name="WorkOut"
-        component={WorkOutScreen}
-        options={{
-          tabBarIcon: ({color, size}) => (
-            <Icon name="directions-run" size={size} color={color} />
-          ),
-        }}
-      />
+      }}
+      initialRouteName="WorkOut">
       <Tab.Screen
         name="Race"
         component={RaceScreen}
         options={{
           tabBarIcon: ({color, size}) => (
             <Icon name="flag" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="WorkOut"
+        component={WorkOutScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Icon name="directions-run" size={size} color={color} />
           ),
         }}
       />

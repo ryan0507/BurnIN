@@ -50,7 +50,7 @@ function GetNickname({navigation}) {
   };
   return (
     <InputScreen>
-      <SignUpInput field="nickname" placeholder="닉네임" smallBtn />
+      <SignUpInput field="nickname" placeholder="닉네임" smallBtn getPhoto />
       <CustomBtn title="다음으로" onPress={onPress} />
     </InputScreen>
   );
@@ -78,7 +78,9 @@ function GetHeightWeight({navigation}) {
         // 응답 성공 시 Main으로 화면 이동
         navigation.navigate('MainTab');
       })
-      .catch(() => {});
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   return (

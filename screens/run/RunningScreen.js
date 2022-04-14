@@ -29,16 +29,20 @@ function RunningScreen({route}) {
     }
     watchId.current = Geolocation.watchPosition(
       position => {
+        console.log('position updated');
         console.log(position);
         // 30초 단위로
 
         // 페이스 업데이트
-        // 소모 칼로리 업데이트
-        setCalories(calCalories(52, nowTime.current)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
+        // 소모 칼로리
+        setCalories(calCalories(52, realtime.current)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
+        console.log(calories);
         // 거리 계산해서 업데이트
         const newLat = position.coords.latitude;
         const newLon = position.coords.longitude;
-        setTotalDist(calDistance(currentLat, currentLon, newLat, newLon));
+        setTotalDist(
+          calDistance(currentLat.current, currentLon.current, newLat, newLon),
+        );
         currentLat.current = newLat;
         currentLon.current = newLon;
         console.log(totalDist);

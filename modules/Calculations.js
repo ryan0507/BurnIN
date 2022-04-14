@@ -22,6 +22,6 @@ export const calDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 export const calCalories = (weight, sec) => {
-  const min = parseInt(sec / 60);
+  const min = parseInt(sec / 1000 / 60);
   return 10 * 3.5 * weight * min * 5;
 };

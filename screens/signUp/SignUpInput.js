@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import SignUpContext from '../../contexts/SignUpContext';
 import UnderlinedInput from '../../components/UnderlinedInput';
+import PhotoInput from '../../components/PhotoInput';
 import CustomSmallBtn from '../../components/CustomSmallBtn';
 
 function SignUpInput({field, getPhoto, placeholder, smallBtn, ...rest}) {
@@ -13,6 +14,7 @@ function SignUpInput({field, getPhoto, placeholder, smallBtn, ...rest}) {
 
   return (
     <View style={styles.block}>
+      {getPhoto && <PhotoInput />}
       <Text style={styles.text}>{placeholder}</Text>
       <UnderlinedInput
         placeholder={placeholder}

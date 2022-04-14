@@ -1,8 +1,9 @@
 import React, {useEffect, useRef} from 'react';
-import {View, Text, Button} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation} from '@react-navigation/native';
+import CircularBtn from '../../components/CircularBtn';
 
 function WorkOutScreen() {
   const navigation = useNavigation();
@@ -43,10 +44,9 @@ function WorkOutScreen() {
   }, []);
 
   return (
-    <View>
-      <Text>WorkOut</Text>
-      <Button
-        title="run"
+    <View style={styles.block}>
+      <CircularBtn
+        title="시작"
         onPress={() => {
           navigation.navigate('RunStack', {
             screen: 'RunningScreen',
@@ -59,3 +59,11 @@ function WorkOutScreen() {
 }
 
 export default WorkOutScreen;
+
+const styles = StyleSheet.create({
+  block: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+});
