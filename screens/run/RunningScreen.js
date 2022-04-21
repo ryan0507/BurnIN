@@ -64,9 +64,9 @@ function RunningScreen({route}) {
     );
   };
 
-  useEffect(() => {
-    getLocationUpdates();
-  });
+  // useEffect(() => {
+  //   getLocationUpdates();
+  // });
 
   return (
     <View>

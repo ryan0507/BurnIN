@@ -62,7 +62,7 @@ function GetPassword({navigation}) {
   };
   return (
     <InputScreen>
-      <SignUpInput field="password" placeholder="비밀번호" />
+      <SignUpInput field="password" placeholder="비밀번호" secureTextEntry />
       <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );
@@ -85,8 +85,8 @@ function GetHeightWeight({navigation}) {
 
   return (
     <InputScreen>
-      <SignUpInput field="height" placeholder="키" />
-      <SignUpInput field="weight" placeholder="몸무게" />
+      <SignUpInput field="height" placeholder="키" picker />
+      <SignUpInput field="weight" placeholder="몸무게" picker />
       <CustomBtn title="회원가입 완료" onPress={onPress} />
     </InputScreen>
   );

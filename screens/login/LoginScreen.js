@@ -62,10 +62,14 @@ const styles = StyleSheet.create({
   },
   btnWrapper: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   text: {
     marginRight: 10,
     color: 'black',
     flex: 0.2,
+    fontSize: 12,
+    fontFamily: 'SpoqaHanSansNeo-regular',
   },
 });

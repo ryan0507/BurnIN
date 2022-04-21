@@ -15,16 +15,12 @@ export default LoginBtn;
 
 const styles = StyleSheet.create({
   block: {
-    borderRadius: 4,
-    flex: 1,
     marginTop: 120,
-  },
-  wrapper: {
-    borderRadius: 10,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.76)',
+    height: 48,
+    width: 135,
+    borderRadius: 10,
+    justifyContent: 'center',
   },
   text: {
     fontWeight: '600',
