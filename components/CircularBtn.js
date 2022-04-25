@@ -1,11 +1,17 @@
 import React from 'react';
 import {View, Pressable, Text, StyleSheet, Platform} from 'react-native';
 
-function CircularBtn({onPress, title}) {
+function CircularBtn({onPress, children, white, wideMargin}) {
   return (
-    <View style={styles.block}>
+    <View
+      style={[
+        styles.block,
+        white && styles.reverse,
+        wideMargin && styles.wideMargin,
+      ]}>
       <Pressable onPress={onPress} android_ripple={{color: '#ffffff'}}>
-        <Text style={styles.text}>{title}</Text>
+        {/* <Text style={styles.text}>{title}</Text> */}
+        {children}
       </Pressable>
     </View>
   );
@@ -23,12 +29,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ef9917',
     marginBottom: 28,
   },
-  text: {
-    fontWeight: '600',
-    fontSize: 24,
-    color: '#ffffff',
+  reverse: {
+    backgroundColor: '#ffffff',
   },
   margin: {
     marginBottom: 8,
+  },
+  wideMargin: {
+    marginBottom: 75,
   },
 });

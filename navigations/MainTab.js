@@ -19,6 +19,7 @@ function MainTab() {
         name="Race"
         component={RaceScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({color, size}) => (
             <Icon name="flag" size={size} color={color} />
           ),
@@ -38,6 +39,7 @@ function MainTab() {
         name="Dashboard"
         component={DashboardScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({color, size}) => (
             <Icon name="insights" size={size} color={color} />
           ),
@@ -47,6 +49,7 @@ function MainTab() {
         name="Profile"
         component={ProfileScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({color, size}) => (
             <Icon name="face" size={size} color={color} />
           ),

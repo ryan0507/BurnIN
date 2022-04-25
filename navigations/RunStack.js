@@ -8,7 +8,11 @@ function RunStack() {
 
   return (
     <Stack.Navigator initialRouteName="RunningScreen">
-      <Stack.Screen name="RunningScreen" component={RunningScreen} />
+      <Stack.Screen
+        name="RunningScreen"
+        component={RunningScreen}
+        options={{headerShown: false}}
+      />
       <Stack.Screen name="PauseScreen" component={PauseScreen} />
     </Stack.Navigator>
   );

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation} from '@react-navigation/native';
@@ -28,9 +28,7 @@ function WorkOutScreen() {
         accuracy: {
           android: 'high',
         },
-        enableHighAccuracy: true,
         timeout: 30000,
-        maximumAge: 10000,
         distanceFilter: 0,
         forceRequestLocation: true,
         forceLocationManager: false,
@@ -46,14 +44,14 @@ function WorkOutScreen() {
   return (
     <View style={styles.block}>
       <CircularBtn
-        title="시작"
         onPress={() => {
           navigation.navigate('RunStack', {
             screen: 'RunningScreen',
             params: {lat: lat.current, lon: lon.current},
           });
-        }}
-      />
+        }}>
+        <Text style={styles.text}>시작</Text>
+      </CircularBtn>
     </View>
   );
 }
@@ -65,5 +63,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  text: {
+    fontWeight: '600',
+    fontSize: 24,
+    color: '#ffffff',
   },
 });
