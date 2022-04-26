@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, StatusBar, Pressable} from 'react-native';
-import {Children} from 'react/cjs/react.production.min';
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
 
@@ -73,6 +72,10 @@ const styles = StyleSheet.create({
     borderColor: '#ef9917',
     color: '#ef9917',
   },
+  unselected: {
+    borderColor: '#817D83',
+    color: '#817D83',
+  },
 });
 
 function Ranking() {
@@ -100,11 +103,19 @@ function TabBtn({onPress, tab, title}) {
       ]}>
       <Pressable onPress={onPress}>
         {title === 'ranking' ? (
-          <Text style={[tab === title ? styles.selected : styles.unselected]}>
+          <Text
+            style={[
+              tab === title ? styles.selected : styles.unselected,
+              styles.small,
+            ]}>
             순위 보기
           </Text>
         ) : (
-          <Text style={[tab === title ? styles.selected : styles.unselected]}>
+          <Text
+            style={[
+              tab === title ? styles.selected : styles.unselected,
+              styles.small,
+            ]}>
             대시보드 보기
           </Text>
         )}
