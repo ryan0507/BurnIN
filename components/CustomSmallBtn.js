@@ -1,9 +1,14 @@
 import React from 'react';
 import {View, Pressable, Text, StyleSheet} from 'react-native';
 
-function CustomSmallBtn({onPress, title, marginLeft}) {
+function CustomSmallBtn({onPress, title, marginLeft, wide}) {
   return (
-    <View style={[styles.block, marginLeft && styles.marginLeft]}>
+    <View
+      style={[
+        styles.block,
+        wide && styles.wide,
+        marginLeft && styles.marginLeft,
+      ]}>
       <Pressable android_ripple={{color: '#ffffff'}} onPress={onPress}>
         <Text style={styles.text}>{title}</Text>
       </Pressable>
@@ -23,6 +28,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(239,153,23,0.05)',
+  },
+  wide: {
+    width: 228,
   },
   marginLeft: {
     marginLeft: 10,

@@ -49,10 +49,19 @@ function MainTab() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: false,
           tabBarIcon: ({color, size}) => (
             <Icon name="face" size={size} color={color} />
           ),
+          title: '프로필',
+          headerStyle: {
+            backgroundColor: '#f4bc68',
+          },
+          headerTintColor: '#ffffff',
+          headerTitleStyle: {
+            fontWeight: '800',
+            fontSize: 24,
+          },
+          headerTitleAlign: 'center',
         }}
       />
     </Tab.Navigator>
