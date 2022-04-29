@@ -1,15 +1,17 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation} from '@react-navigation/native';
 import CircularBtn from '../../components/CircularBtn';
+import MapView from 'react-native-maps';
 
 function WorkOutScreen() {
   const navigation = useNavigation();
-  const lat = useRef(0);
-  const lon = useRef(0);
-
+  const [lat, setLat] = useState(0);
+  const [lon, setLon] = useState(0);
+  console.log(lat);
+  console.log(lon);
   const getLocation = async () => {
     const locationPermission = await hasPermission();
     if (!locationPermission) {
@@ -18,8 +20,8 @@ function WorkOutScreen() {
     Geolocation.getCurrentPosition(
       position => {
         console.log(position);
-        lat.current = position.coords.latitude;
-        lon.current = position.coords.longitude;
+        setLat(position.coords.latitude);
+        setLon(position.coords.longitude);
       },
       error => {
         console.log(error);
@@ -43,11 +45,26 @@ function WorkOutScreen() {
 
   return (
     <View style={styles.block}>
+      <MapView
+        initialRegion={{
+          latitude: 37.56578,
+          longitude: 126.9386,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        region={{
+          latitude: lat,
+          longitude: lon,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        style={styles.map}
+      />
       <CircularBtn
         onPress={() => {
           navigation.navigate('RunStack', {
             screen: 'RunningScreen',
-            params: {lat: lat.current, lon: lon.current},
+            params: {lat, lon},
           });
         }}>
         <Text style={styles.text}>시작</Text>
@@ -63,10 +80,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+    position: 'relative',
   },
   text: {
     fontWeight: '600',
     fontSize: 24,
     color: '#ffffff',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
 });
