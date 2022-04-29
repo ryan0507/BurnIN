@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,23 @@ import {
 } from 'react-native';
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
+import userStorages from '../../storages/userStorages';
 
 function DashboardScreen() {
+  const [nickname, setNickname] = useState('');
+  const [photo, setPhoto] = useState('');
+  useEffect(() => {
+    userStorages.get().then(userInfo => {
+      setNickname(userInfo.nickname);
+      setPhoto('data:image/;base64,' + userInfo.photo.assets[0].base64);
+    });
+  }, []);
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
       <ScrollView style={styles.block}>
         <OrangeBlock>
-          <Profile />
+          <Profile nickname={nickname} photo={photo} />
           <WhiteBlock>
             <ProgessRecord />
           </WhiteBlock>
@@ -93,15 +102,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function Profile() {
+function Profile({nickname, photo}) {
   return (
     <View style={styles.profileBlock}>
       <Image
-        source={require('../../assets/test.png')}
+        source={{uri: photo}}
         style={{width: 52, height: 52, borderRadius: 26, marginRight: 12}}
       />
       <Text style={{fontSize: 15, fontWeight: '700', color: '#ffffff'}}>
-        와이빅타
+        {nickname}
       </Text>
     </View>
   );

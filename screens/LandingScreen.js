@@ -7,9 +7,9 @@ function LandingScreen({navigation}) {
   // AsyncStorage 확인
   // token 있으면 메인 페이지로 이동, 없으면 로그인 페이지로 이동
 
-  useEffect(() => {
-    AsyncStorage.clear();
-  }, []);
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // }, []);
   useEffect(() => {
     loginStorages
       .get()

@@ -102,8 +102,10 @@ const styles = StyleSheet.create({
   },
   pickerBlock: {
     borderRadius: 10,
+    height: 36,
     backgroundColor: '#F9F6F2',
     flex: 1,
+    justifyContent: 'center',
   },
   picker: {},
 });

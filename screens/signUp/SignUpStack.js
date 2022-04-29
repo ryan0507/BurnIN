@@ -3,7 +3,6 @@ import React, {useContext} from 'react';
 import SignUpInput from './SignUpInput';
 import InputScreen from '../InputScreen';
 import CustomBtn from '../../components/CustomBtn';
-import {SignUpContextProvider} from '../../contexts/SignUpContext';
 import SignUpContext from '../../contexts/SignUpContext';
 import {StatusBar} from 'react-native';
 
@@ -12,25 +11,23 @@ function SignUpStack() {
   return (
     <>
       <StatusBar backgroundColor="#EF9917" />
-      <SignUpContextProvider>
-        <Stack.Navigator initialRouteName="GetNickname">
-          <Stack.Screen
-            name="GetNickname"
-            component={GetNickname}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="GetPassword"
-            component={GetPassword}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="GetHeightWeight"
-            component={GetHeightWeight}
-            options={{headerShown: false}}
-          />
-        </Stack.Navigator>
-      </SignUpContextProvider>
+      <Stack.Navigator initialRouteName="GetNickname">
+        <Stack.Screen
+          name="GetNickname"
+          component={GetNickname}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="GetPassword"
+          component={GetPassword}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="GetHeightWeight"
+          component={GetHeightWeight}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
     </>
   );
 }

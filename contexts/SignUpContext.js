@@ -29,13 +29,15 @@ export function SignUpContextProvider({children}) {
   const signUp = async () => {
     try {
       console.log(form);
-      const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
+      // const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
 
       // save token at loginStorage
 
       // save user info at userStorage
-      userStorages.set(form);
+      await userStorages.set(form);
+      console.log('saved user information at userStorage');
     } catch (e) {
+      console.log('failed to save user information at userStorage');
       console.log(e);
     }
   };

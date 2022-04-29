@@ -2,7 +2,6 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 
 function WhiteBlock({children, ver2}) {
-  console.log(ver2);
   return (
     <View style={[ver2 ? styles.block2 : styles.block]}>
       <View style={[ver2 ? styles.innerBlock2 : styles.innerBlock]}>
