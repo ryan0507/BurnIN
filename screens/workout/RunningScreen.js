@@ -1,29 +1,49 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
-import Moment from 'react-moment';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useInterval} from 'react-use';
+import moment from 'moment';
 import {calCalories, calDistance} from '../../modules/Calculations';
 import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 function RunningScreen({route}) {
+  const navigation = useNavigation();
   const watchId = useRef(null);
-  const realtime = useRef(0);
   const currentLat = useRef(route.params.lat);
   const currentLon = useRef(route.params.lon);
   const [currentPace, setCurrentPace] = useState('-\'--"');
   const [calories, setCalories] = useState('--');
   const [totalDist, setTotalDist] = useState(0.0);
-  const [inFocus, setInFocus] = useState(true);
+  const [time, setTime] = useState(moment.duration(0, 'seconds'));
+  const [focus, setFocus] = useState(true);
 
-  const nowTime = Date.now();
-  const navigation = useNavigation();
-
-  const updateRealtime = time => {
-    realtime.current = time;
+  const tick = () => {
+    setTime(prevTime => prevTime.clone().add(1, 'seconds'));
   };
+
+  const timer = useInterval(() => {
+    if (focus) {
+      tick();
+      console.log(time);
+    }
+  }, 1000);
+
+  if (!focus) {
+    clearInterval(timer);
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      setFocus(true);
+
+      return () => {
+        setFocus(false);
+      };
+    }, []),
+  );
 
   const getLocationUpdates = async () => {
     const locationPermission = await hasPermission();
@@ -34,13 +54,10 @@ function RunningScreen({route}) {
       position => {
         console.log('position updated');
         console.log(position);
-        // 30초 단위로
 
-        // 페이스 업데이트
-        // 소모 칼로리
-        setCalories(calCalories(52, realtime.current)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
+        setCalories(calCalories(52, time)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
         console.log(calories);
-        // 거리 계산해서 업데이트
+
         const newLat = position.coords.latitude;
         const newLon = position.coords.longitude;
         setTotalDist(
@@ -67,21 +84,6 @@ function RunningScreen({route}) {
     );
   };
 
-  useEffect(() => {
-    console.log('runnignscreen rendered');
-    return () => {
-      console.log('runningscreen 끝');
-      Geolocation.clearWatch(watchId.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    navigation.addListener('focus', event => {
-      setInFocus(true);
-      getLocationUpdates();
-    });
-  });
-
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
@@ -95,15 +97,9 @@ function RunningScreen({route}) {
           </View>
           <View style={styles.recordItem}>
             <Text style={[styles.recordText, styles.medium]}>
-              <Moment
-                element={Text}
-                date={nowTime}
-                durationFromNow
-                interval={1000}
-                onChange={val => {
-                  updateRealtime(val);
-                }}
-              />
+              {`${time.hours() < 10 ? `0${time.hours()}` : time.hours()}:${
+                time.minutes() < 10 ? `0${time.minutes()}` : time.minutes()
+              }:${time.seconds() < 10 ? `0${time.seconds()}` : time.seconds()}`}
             </Text>
             <Text style={[styles.recordText, styles.small]}>시간</Text>
           </View>
@@ -118,7 +114,7 @@ function RunningScreen({route}) {
         </View>
         <CircularBtn
           onPress={() => {
-            navigation.navigate('PauseScreen', {realtime});
+            navigation.navigate('PauseScreen', time);
           }}
           white
           wideMargin>
