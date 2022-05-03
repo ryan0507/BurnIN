@@ -10,8 +10,6 @@ function WorkOutScreen() {
   const navigation = useNavigation();
   const [lat, setLat] = useState(0);
   const [lon, setLon] = useState(0);
-  console.log(lat);
-  console.log(lon);
   const getLocation = async () => {
     const locationPermission = await hasPermission();
     if (!locationPermission) {
@@ -19,7 +17,6 @@ function WorkOutScreen() {
     }
     Geolocation.getCurrentPosition(
       position => {
-        console.log(position);
         setLat(position.coords.latitude);
         setLon(position.coords.longitude);
       },

@@ -8,11 +8,11 @@ export const hasPermission = async () => {
     return true;
   }
 
-  const hasPermission = await PermissionsAndroid.check(
+  const checkPermission = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
   );
 
-  if (hasPermission) {
+  if (checkPermission) {
     return true;
   }
 

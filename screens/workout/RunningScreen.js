@@ -1,11 +1,16 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {useInterval} from 'react-use';
 import moment from 'moment';
-import {calCalories, calDistance} from '../../modules/Calculations';
+import {
+  calCalories,
+  calDistance,
+  calPace,
+  pacePresentation,
+} from '../../modules/Calculations';
 import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -15,8 +20,8 @@ function RunningScreen({route}) {
   const currentLat = useRef(route.params.lat);
   const currentLon = useRef(route.params.lon);
   const [currentPace, setCurrentPace] = useState('-\'--"');
-  const [calories, setCalories] = useState('--');
-  const [totalDist, setTotalDist] = useState(0.0);
+  const [calories, setCalories] = useState(0);
+  const [totalDist, setTotalDist] = useState(0);
   const [time, setTime] = useState(moment.duration(0, 'seconds'));
   const [focus, setFocus] = useState(true);
 
@@ -27,7 +32,6 @@ function RunningScreen({route}) {
   const timer = useInterval(() => {
     if (focus) {
       tick();
-      console.log(time);
     }
   }, 1000);
 
@@ -35,37 +39,49 @@ function RunningScreen({route}) {
     clearInterval(timer);
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      setFocus(true);
+  useEffect(() => {
+    setFocus(true);
+    if (focus === true && watchId.current == null) {
+      getLocationUpdates();
+    }
 
-      return () => {
-        setFocus(false);
-      };
-    }, []),
-  );
+    return () => {
+      setFocus(false);
+      removeLocationUpdates();
+    };
+  }, [focus, getLocationUpdates]);
 
-  const getLocationUpdates = async () => {
-    const locationPermission = await hasPermission();
-    if (!locationPermission) {
+  const updatelocation = useInterval(() => {
+    if (focus) {
+      getLocationUpdates();
+    }
+  }, 30000);
+
+  if (!focus) {
+    clearInterval(updatelocation);
+  }
+
+  const getLocationUpdates = useCallback(async () => {
+    const LocationPermission = await hasPermission();
+    if (!LocationPermission) {
       return;
     }
-    watchId.current = Geolocation.watchPosition(
+    watchId.current = Geolocation.getCurrentPosition(
       position => {
-        console.log('position updated');
         console.log(position);
-
-        setCalories(calCalories(52, time)); // 나중에 실제 유저 몸무게로 업데이트 해줘야 함
-        console.log(calories);
-
-        const newLat = position.coords.latitude;
-        const newLon = position.coords.longitude;
-        setTotalDist(
-          calDistance(currentLat.current, currentLon.current, newLat, newLon),
+        let newLat = position.coords.latitude;
+        let newLon = position.coords.longitude;
+        let newDist = calDistance(
+          currentLat.current,
+          currentLon.current,
+          newLat,
+          newLon,
         );
-        currentLat.current = newLat;
-        currentLon.current = newLon;
-        console.log(totalDist);
+        setTotalDist(prevDist => parseFloat(prevDist) + parseFloat(newDist));
+        setCurrentPace(pacePresentation(calPace(newDist, 30)));
+        setCalories(
+          prevCal => parseFloat(prevCal) + calCalories(52, time.asSeconds()),
+        );
       },
       error => {
         console.log(error);
@@ -75,13 +91,16 @@ function RunningScreen({route}) {
           android: 'high',
         },
         enableHighAccuracy: true,
-        distanceFilter: 0,
-        interval: 10000,
-        fastestInterval: 2000,
-        forceRequestLocation: true,
-        forceLocationManager: true,
+        timeout: 15000,
+        maximumAge: 10000,
       },
     );
+  }, [time]);
+  const removeLocationUpdates = () => {
+    console.log('remove location listener');
+
+    Geolocation.clearWatch(watchId.current);
+    watchId.current = null;
   };
 
   return (
@@ -104,12 +123,14 @@ function RunningScreen({route}) {
             <Text style={[styles.recordText, styles.small]}>시간</Text>
           </View>
           <View style={styles.recordItem}>
-            <Text style={[styles.recordText, styles.medium]} />
+            <Text style={[styles.recordText, styles.medium]}>{calories}</Text>
             <Text style={[styles.recordText, styles.small]}>칼로리</Text>
           </View>
         </View>
         <View style={styles.distBlock}>
-          <Text style={[styles.recordText, styles.large]}>{totalDist}</Text>
+          <Text style={[styles.recordText, styles.large]}>
+            {totalDist.toFixed(1)}
+          </Text>
           <Text style={[styles.recordText, styles.medium]}>킬로미터</Text>
         </View>
         <CircularBtn

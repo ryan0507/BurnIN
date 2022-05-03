@@ -13,7 +13,11 @@ function RunStack() {
         component={RunningScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="PauseScreen" component={PauseScreen} />
+      <Stack.Screen
+        name="PauseScreen"
+        component={PauseScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
