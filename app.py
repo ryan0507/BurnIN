@@ -20,15 +20,15 @@ def insert_user(user):
             nickname,
             height,
             weight,
+            photo,
             age,
-            photo
         ) VALUES (
-            :passwd,
+            :password,
             :nickname,
             :height,
             :weight,
+            :photo,
             :age,
-            :photo
         )
     """), user).lastrowid
 
@@ -41,8 +41,7 @@ def get_user(user_id):
             weight,
             age,
             photo
-        FROM user
-        WHERE id = :user_id
+        FROM user   
     """), {
         'user_id' : user_id
     }).fetchone()
@@ -85,13 +84,17 @@ def create_app(test_config = None):
     def ping():
         return "pong"
 
-    @app.route("/sign-up", methods=['POST'])
+    @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
-        new_user = request.json
-        user_id= insert_user(new_user)
-        new_user = get_user(user_id)
+        if request.method == 'POST':
+            new_user = request.json
+            user_id= insert_user(new_user)
+            new_user = get_user(user_id)
 
-        return jsonify(new_user)
+            return jsonify(new_user)
+        elif request.method == 'GET':
+            return get_user('')
+
 
     @app.route('/login', methods=['POST'])
     def login():
