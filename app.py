@@ -21,14 +21,14 @@ def insert_user(user):
             height,
             weight,
             photo,
-            age,
+            age
         ) VALUES (
             :password,
             :nickname,
             :height,
             :weight,
             :photo,
-            :age,
+            :age
         )
     """), user).lastrowid
 
