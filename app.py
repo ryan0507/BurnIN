@@ -5,6 +5,7 @@ from flask.json import JSONEncoder
 from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
 from functools  import wraps
+import datetime
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -32,6 +33,23 @@ def insert_user(user):
         )
     """), user).lastrowid
 
+def insert_run_data(record):
+    return current_app.database.execute(text("""
+        INSERT INTO runinfo (
+             id,
+             user_id,
+             created_at,
+             time_record,
+             distance  
+        ) VALUES (
+            :id,
+            :user_id,
+            :created_at,
+            :time_record,
+            :distance
+        )
+    """), record)
+
 def get_user(user_id):
     user = current_app.database.execute(text("""
         SELECT
@@ -41,7 +59,8 @@ def get_user(user_id):
             weight,
             age,
             photo
-        FROM user   
+        FROM user
+        WHERE nickname = :user_id   
     """), {
         'user_id' : user_id
     }).fetchone()
@@ -64,7 +83,7 @@ def get_user_id_and_password(email):
     """), {'email' : email}).fetchone()
 
     return {
-        'id'              : row['id'],
+        'id'     : row['id'],
         'passwd' : row['passwd']
     } if row else None
 
@@ -92,15 +111,29 @@ def create_app(test_config = None):
             new_user = get_user(user_id)
 
             return jsonify(new_user)
-        elif request.method == 'GET':
-            return get_user('')
 
+        ## JUST for check data
+
+        elif request.method == 'GET':
+            return get_user('eee')
+
+    @app.route("/nickname-check", methods = ['POST'])
+    def duplicate():
+        if request.method == 'POST':
+            cur_request = request.json
+            is_duplicate : bool = get_user(cur_request['nickname']) is not None
+
+            # When exist: 404, not exist: 200
+            if is_duplicate:
+                return '', 404
+            else:
+                return '', 200
 
     @app.route('/login', methods=['POST'])
     def login():
         credential = request.json
-        email = credential['email']
-        password = credential['password']
+        email = credential['nickname']
+        password = credential['passwd']
         user_credential = get_user_id_and_password(email)
 
         if user_credential and bcrypt.checkpw(password.encode('UTF-8'),
@@ -119,6 +152,34 @@ def create_app(test_config = None):
             return '', 401
 
     return app
+
+
+    @app.route('/race-finish', methods=['POST'])
+    def post_info():
+        user_id = request.headers.get('user_id')
+        user = get_uesr(user_id)
+
+        # TODO: Should be modified with changed DB structure        
+        cur_id = user['id']
+        user_id = user['nickname']
+        info = request.json
+        dist = info['distance']
+        time = info['time']
+        calories = info['calories']
+        paces = info['paces']
+        
+        record = {
+            'id': cur_id,
+            'user_id': user_id,
+            'created_at' : datetime.datetime.now().timestamp,
+            'time_record' : time,
+            'distance' : dist
+        }
+
+        insert_run_data(record)
+
+        return '', 200
+
 
 #########################################################
 #       Decorators
