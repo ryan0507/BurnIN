@@ -1,52 +1,76 @@
-import React, {useEffect, useCallback, useRef} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import moment from 'moment';
+import React, {useEffect, useCallback, useRef, useContext} from 'react';
+import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import CircularBtn from '../../components/CircularBtn';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import WorkOutContext from '../../contexts/WorkOutContext';
 
-function PauseScreen({route}) {
-  const day = useRef(moment().day());
-  useEffect(() => {
-    console.log('pausescreen rendered');
-  }, []);
-  const time = route.params;
-  const parseDay = () => {
-    let result = '';
-    switch (day) {
-      case 0:
-        result = '일요일';
-        break;
-      case 1:
-        result = '월요일';
-        break;
-      case 2:
-        result = '화요일';
-        break;
-      case 3:
-        result = '수요일';
-        break;
-      case 4:
-        result = '목요일';
-        break;
-      case 5:
-        result = '금요일';
-        break;
-      case 6:
-        result = '토요일';
-        break;
-    }
-    return result;
+function PauseScreen({navigation, route}) {
+  const {time, totalDist, calories, currentPace} = route.params;
+  const {dispatch, sendRecord} = useContext(WorkOutContext);
+
+  const onPress = () => {
+    const record = {
+      time: time.asSeconds(),
+      distance: totalDist,
+      calories,
+      averagePace: currentPace,
+    };
+    dispatch({type: 'UPDATE_RECORD', payload: record});
+    sendRecord().then(() => {
+      navigation.navigate('ResultScreen', {
+        time,
+        totalDist,
+        calories,
+        currentPace,
+      });
+    });
   };
-  console.log(parseDay);
 
   return (
-    <View style={styles.block}>
-      <Text>{moment().format('YYYY.MM.DD')}</Text>
-      <Text>
-        {`시간 ${time.hours() < 10 ? `0${time.hours()}` : time.hours()}:${
-          time.minutes() < 10 ? `0${time.minutes()}` : time.minutes()
-        }:${time.seconds() < 10 ? `0${time.seconds()}` : time.seconds()}`}
-      </Text>
-      <Text>거리</Text>
-    </View>
+    <>
+      <StatusBar backgroundColor="#000000" />
+      <View style={styles.block}>
+        <View style={styles.recordsBlock}>
+          <View style={styles.recordItem}>
+            <Text style={[styles.recordText, styles.medium]}>
+              {currentPace}
+            </Text>
+            <Text style={[styles.recordText, styles.small]}>페이스</Text>
+          </View>
+          <View style={styles.recordItem}>
+            <Text style={[styles.recordText, styles.medium]}>
+              {`${
+                time.minutes() < 10 ? `0${time.minutes()}` : time.minutes()
+              }:${time.seconds() < 10 ? `0${time.seconds()}` : time.seconds()}`}
+            </Text>
+            <Text style={[styles.recordText, styles.small]}>시간</Text>
+          </View>
+          <View style={styles.recordItem}>
+            <Text style={[styles.recordText, styles.medium]}>{calories}</Text>
+            <Text style={[styles.recordText, styles.small]}>칼로리</Text>
+          </View>
+        </View>
+        <View style={styles.distBlock}>
+          <Text style={[styles.recordText, styles.large]}>
+            {totalDist.toFixed(2)}
+          </Text>
+          <Text style={[styles.recordText, styles.medium]}>킬로미터</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CircularBtn
+            onPress={() => {
+              navigation.goBack('RunningScreen');
+            }}
+            white
+            wideMargin>
+            <Text style={styles.btnText}>러닝 재개</Text>
+          </CircularBtn>
+          <CircularBtn onPress={onPress} white wideMargin small>
+            <Icon name="stop" size={18} />
+          </CircularBtn>
+        </View>
+      </View>
+    </>
   );
 }
 export default PauseScreen;
@@ -54,8 +78,39 @@ export default PauseScreen;
 const styles = StyleSheet.create({
   block: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    paddingVertical: 20,
+    backgroundColor: '#000000',
+    paddingTop: 48,
     paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  recordsBlock: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  distBlock: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recordItem: {
+    alignItems: 'center',
+  },
+  recordText: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  small: {
+    fontSize: 18,
+  },
+  medium: {
+    fontSize: 32,
+  },
+  large: {
+    fontSize: 100,
+  },
+  btnText: {
+    fontSize: 18,
+    fontWeight: '700',
   },
 });

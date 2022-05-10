@@ -9,21 +9,28 @@ import loginStorages from '../../storages/loginStorages';
 function LoginScreen({navigation}) {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
+  const [noti, setNoti] = useState(false);
 
   const onPress = () => {
     const form = {id, password};
-    login(form).then(() => {
-      console.log(loginStorages.get());
-      navigation.navigate('MainTab');
-    });
+    login(form)
+      .then(() => {
+        navigation.navigate('MainTab');
+      })
+      .catch(e => {
+        setNoti(true);
+        setTimeout(() => {
+          setNoti(false);
+        }, 5000);
+      });
   };
 
   return (
     <InputScreen isLogin>
       <View style={[styles.inputWrapper, styles.marginTop]}>
-        <Text style={styles.text}>닉네임</Text>
+        <Text style={styles.text}>아이디</Text>
         <UnderlinedInput
-          placeholder="닉네임"
+          placeholder="아이디"
           value={id}
           onChangeText={setId}
           hasMarginBottom
@@ -37,6 +44,10 @@ function LoginScreen({navigation}) {
           onChangeText={setPassword}
         />
       </View>
+      <Text style={[styles.noti, !noti && styles.inivisble]}>
+        {`등록되지 않은 아이디이거나
+아이디 혹은 비밀번호를 잘못 입력했습니다.`}
+      </Text>
       <View style={styles.btnWrapper}>
         <LoginBtn title="로그인" onPress={onPress} hasMarginBottom />
         <LoginBtn
@@ -71,5 +82,14 @@ const styles = StyleSheet.create({
     flex: 0.2,
     fontSize: 12,
     fontFamily: 'SpoqaHanSansNeo-regular',
+  },
+  noti: {
+    color: 'white',
+    fontSize: 12,
+    marginTop: 20,
+    width: '100%',
+  },
+  inivisble: {
+    opacity: 0,
   },
 });

@@ -7,9 +7,10 @@ function LandingScreen({navigation}) {
   // AsyncStorage 확인
   // token 있으면 메인 페이지로 이동, 없으면 로그인 페이지로 이동
 
-  // useEffect(() => {
-  //   AsyncStorage.clear();
-  // }, []);
+  useEffect(() => {
+    AsyncStorage.clear();
+  }, []);
+
   useEffect(() => {
     loginStorages
       .get()
@@ -24,17 +25,15 @@ function LandingScreen({navigation}) {
 
   return (
     <ImageBackground
-      source={{
-        uri: 'https://images.unsplash.com/photo-1508325732378-00eafff6c504?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1553&q=80',
-      }}
-      style={styles.block}>
+      source={require('../assets/main.jpg')}
+      style={styles.image}>
       <Text style={styles.logo}>BurnIN</Text>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  block: {
+  image: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

@@ -1,8 +1,14 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useContext,
+} from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useInterval} from 'react-use';
 import moment from 'moment';
 import {
@@ -13,12 +19,18 @@ import {
 } from '../../modules/Calculations';
 import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import userStorages from '../../storages/userStorages';
+import WorkOutContext from '../../contexts/WorkOutContext';
 
 function RunningScreen({route}) {
   const navigation = useNavigation();
+  const {dispatch, paces} = useContext(WorkOutContext);
+
   const watchId = useRef(null);
-  const currentLat = useRef(route.params.lat);
-  const currentLon = useRef(route.params.lon);
+  const weight = useRef(0);
+
+  const [lat, setLat] = useState(route.params.lat);
+  const [lon, setLon] = useState(route.params.lon);
   const [currentPace, setCurrentPace] = useState('-\'--"');
   const [calories, setCalories] = useState(0);
   const [totalDist, setTotalDist] = useState(0);
@@ -39,49 +51,27 @@ function RunningScreen({route}) {
     clearInterval(timer);
   }
 
-  useEffect(() => {
-    setFocus(true);
-    if (focus === true && watchId.current == null) {
-      getLocationUpdates();
+  const removeLocationUpdates = () => {
+    console.log('removed geolocation');
+    if (watchId.current != null) {
+      Geolocation.clearWatch(watchId.current);
     }
+  };
 
-    return () => {
-      setFocus(false);
-      removeLocationUpdates();
-    };
-  }, [focus, getLocationUpdates]);
-
-  const updatelocation = useInterval(() => {
-    if (focus) {
-      getLocationUpdates();
-    }
-  }, 30000);
-
-  if (!focus) {
-    clearInterval(updatelocation);
-  }
-
-  const getLocationUpdates = useCallback(async () => {
-    const LocationPermission = await hasPermission();
-    if (!LocationPermission) {
-      return;
-    }
-    watchId.current = Geolocation.getCurrentPosition(
+  const getLocationUpdates = () => {
+    watchId.current = Geolocation.watchPosition(
       position => {
-        console.log(position);
-        let newLat = position.coords.latitude;
-        let newLon = position.coords.longitude;
-        let newDist = calDistance(
-          currentLat.current,
-          currentLon.current,
-          newLat,
-          newLon,
-        );
+        const {latitude, longitude} = position.coords;
+        const newLocation = {latitude: latitude, longitude: longitude};
+        dispatch({type: 'UPDATE_LOCATION', payload: newLocation});
+
+        const newDist = calDistance(lat, lon, latitude, longitude);
         setTotalDist(prevDist => parseFloat(prevDist) + parseFloat(newDist));
-        setCurrentPace(pacePresentation(calPace(newDist, 30)));
-        setCalories(
-          prevCal => parseFloat(prevCal) + calCalories(52, time.asSeconds()),
-        );
+        setCalories(calCalories(weight.current, time));
+        setCurrentPace(pacePresentation(calPace(totalDist, time)));
+
+        setLat(latitude);
+        setLon(longitude);
       },
       error => {
         console.log(error);
@@ -91,17 +81,50 @@ function RunningScreen({route}) {
           android: 'high',
         },
         enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
       },
     );
-  }, [time]);
-  const removeLocationUpdates = () => {
-    console.log('remove location listener');
-
-    Geolocation.clearWatch(watchId.current);
-    watchId.current = null;
   };
+
+  useEffect(() => {
+    userStorages.get().then(userInfo => {
+      weight.current = userInfo.weight;
+    });
+    const newLocation = {
+      latitude: route.params.lat,
+      longitude: route.params.lon,
+    };
+    dispatch({type: 'UPDATE_LOCATION', payload: newLocation});
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      removeLocationUpdates();
+    };
+  }, []);
+
+  useEffect(() => {
+    navigation.addListener('focus', e => {
+      setFocus(true);
+      getLocationUpdates();
+    });
+    navigation.addListener('blur', e => {
+      setFocus(false);
+      removeLocationUpdates();
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    console.log(paces);
+    if (paces.length === 0 && totalDist >= 1) {
+      dispatch({type: 'UPDATE_PACE', payload: time.asSeconds()});
+    }
+    if (paces.length === 1 && totalDist >= 2) {
+      dispatch({type: 'UPDATE_PACE', payload: time.asSeconds()});
+    }
+    if (paces.length === 2 && totalDist >= 3) {
+      dispatch({type: 'UPDATE_PACE', payload: time.asSeconds()});
+    }
+  }, [totalDist, dispatch, time, paces]);
 
   return (
     <>
@@ -129,13 +152,18 @@ function RunningScreen({route}) {
         </View>
         <View style={styles.distBlock}>
           <Text style={[styles.recordText, styles.large]}>
-            {totalDist.toFixed(1)}
+            {totalDist.toFixed(2)}
           </Text>
           <Text style={[styles.recordText, styles.medium]}>킬로미터</Text>
         </View>
         <CircularBtn
           onPress={() => {
-            navigation.navigate('PauseScreen', time);
+            navigation.navigate('PauseScreen', {
+              time,
+              totalDist,
+              calories,
+              currentPace,
+            });
           }}
           white
           wideMargin>

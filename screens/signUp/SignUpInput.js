@@ -4,16 +4,8 @@ import RNPickerSelect from 'react-native-picker-select';
 import SignUpContext from '../../contexts/SignUpContext';
 import UnderlinedInput from '../../components/UnderlinedInput';
 import PhotoInput from '../../components/PhotoInput';
-import CustomSmallBtn from '../../components/CustomSmallBtn';
 
-function SignUpInput({
-  field,
-  getPhoto,
-  placeholder,
-  smallBtn,
-  picker,
-  ...rest
-}) {
+function SignUpInput({field, getPhoto, placeholder, picker, ...rest}) {
   // 사용자가 입력한 값을 지정한 필드에 저장
 
   const {form, createChangeTextHandler} = useContext(SignUpContext);
@@ -72,7 +64,6 @@ function SignUpInput({
             value={value}
             {...rest}
           />
-          {smallBtn && <CustomSmallBtn title="중복 확인" marginLeft />}
         </View>
       )}
     </View>

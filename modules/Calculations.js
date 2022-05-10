@@ -69,3 +69,28 @@ export const pacePresentation = pace => {
   pace = paceMins + "'" + paceSecs + '"';
   return pace;
 };
+
+export const getDayName = () => {
+  var days = [
+    '일요일',
+    '월요일',
+    '화요일',
+    '수요일',
+    '목요일',
+    '금요일',
+    '토요일',
+  ];
+  return days[new Date().getDay()];
+};
+
+export const getTimeOfDay = () => {
+  var currentHour = new Date().getHours();
+
+  if (currentHour < 12) {
+    return 'Morning';
+  } else if (currentHour < 18) {
+    return 'Afternoon';
+  } else {
+    return 'Evening';
+  }
+};

@@ -3,19 +3,13 @@ import loginStorages from '../storages/loginStorages';
 
 export const login = async form => {
   try {
-    // const token = await axios.post('/sign-up', form);
-
-    // (temp)test for axios request
-    const res = await axios.get(
-      'https://jsonplaceholder.typicode.com/comments/1',
-    );
-    const token = res.data.name;
+    const token = await axios.post('http://34.67.158.106:5000/login', form);
 
     // save new token at loginStorage
     loginStorages.set(token);
 
     return token;
   } catch (e) {
-    console.log(e);
+    throw new Error();
   }
 };

@@ -1,14 +1,18 @@
 import React from 'react';
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  KeyboardAvoidingView,
+} from 'react-native';
 
 function InputScreen({children, isLogin}) {
   return (
     <>
       {isLogin && (
         <ImageBackground
-          source={{
-            uri: 'https://images.unsplash.com/photo-1508325732378-00eafff6c504?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=706&q=80',
-          }}
+          source={require('../assets/main.jpg')}
           style={styles.bgImg}>
           <View style={[styles.block, styles.loginBlock]}>
             <Text style={styles.logo}>BurnIN</Text>
@@ -41,6 +45,7 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 48,
     fontWeight: '600',
+    fontStyle: 'italic',
     color: '#ffffff',
   },
 });

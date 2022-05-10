@@ -1,10 +1,10 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import SignUpInput from './SignUpInput';
 import InputScreen from '../InputScreen';
 import CustomBtn from '../../components/CustomBtn';
 import SignUpContext from '../../contexts/SignUpContext';
-import {StatusBar} from 'react-native';
+import {StatusBar, Text, View} from 'react-native';
 
 function SignUpStack() {
   const Stack = createNativeStackNavigator();
@@ -35,7 +35,7 @@ function SignUpStack() {
 export default SignUpStack;
 function GetNickname({navigation}) {
   const {sendNickname} = useContext(SignUpContext);
-
+  const [noti, setNoti] = useState(false);
   const onPress = () => {
     sendNickname()
       .then(() => {
@@ -43,11 +43,20 @@ function GetNickname({navigation}) {
       })
       .catch(() => {
         // 닉네임 중복 O - 노티 메시지 띄우기
+        setNoti(true);
+        setTimeout(() => {
+          setNoti(false);
+        }, 5000);
       });
   };
   return (
     <InputScreen>
-      <SignUpInput field="nickname" placeholder="닉네임" smallBtn getPhoto />
+      <SignUpInput field="id" placeholder="닉네임" smallBtn getPhoto />
+      <View style={!noti && {opacity: 0}}>
+        <Text style={{fontSize: 12, width: '100%', marginTop: 10}}>
+          동일한 아이디가 존재합니다.
+        </Text>
+      </View>
       <CustomBtn title="다음으로" onPress={onPress} />
     </InputScreen>
   );
@@ -59,7 +68,7 @@ function GetPassword({navigation}) {
   };
   return (
     <InputScreen>
-      <SignUpInput field="password" placeholder="비밀번호" secureTextEntry />
+      <SignUpInput field="passwd" placeholder="비밀번호" secureTextEntry />
       <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );

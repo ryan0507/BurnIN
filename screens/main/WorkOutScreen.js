@@ -38,6 +38,9 @@ function WorkOutScreen() {
 
   useEffect(() => {
     getLocation();
+    return () => {
+      getLocation();
+    };
   }, []);
 
   return (
@@ -88,5 +91,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+  },
+  small: {
+    fontSize: 18,
+  },
+  medium: {
+    fontSize: 32,
   },
 });

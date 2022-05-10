@@ -3,12 +3,13 @@ import React from 'react';
 import {createContext, useState} from 'react';
 import axios from 'axios';
 import userStorages from '../storages/userStorages';
+import loginStorages from '../storages/loginStorages';
 
 const SignUpContext = createContext();
 export function SignUpContextProvider({children}) {
   const [form, setForm] = useState({
-    nickname: '',
-    password: '',
+    id: '',
+    passwd: '',
     height: '',
     weight: '',
     photo: '',
@@ -20,24 +21,28 @@ export function SignUpContextProvider({children}) {
 
   const sendNickname = async () => {
     try {
-      const res = await axios.post('/signUp/nickname', form.nickname);
+      const res = await axios.post(
+        'http://34.67.158.106:5000/nickname-check',
+        form.id,
+      );
     } catch (e) {
-      console.log(e);
+      // throw new Error();
     }
   };
 
   const signUp = async () => {
     try {
+      // send new user's information
       console.log(form);
-      // const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
+      const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
 
       // save token at loginStorage
+      const {token} = res;
+      await loginStorages.set(token);
 
       // save user info at userStorage
       await userStorages.set(form);
-      console.log('saved user information at userStorage');
     } catch (e) {
-      console.log('failed to save user information at userStorage');
       console.log(e);
     }
   };
