@@ -15,23 +15,22 @@ class CustomJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 def insert_user(user):
-    return current_app.database.execute(text("""
+    current_app.database.execute(text("""
         INSERT INTO user (
+            id,
             passwd,
-            nickname,
             height,
             weight,
-            photo,
-            age
+            photo
         ) VALUES (
-            :password,
-            :nickname,
+            :id,
+            :passwd,
             :height,
             :weight,
-            :photo,
-            :age
+            :photo
         )
     """), user).lastrowid
+    return user['id']
 
 def insert_run_data(record):
     return current_app.database.execute(text("""
@@ -40,13 +39,23 @@ def insert_run_data(record):
              user_id,
              created_at,
              time_record,
-             distance  
+             pace_1,
+             pace_2,
+             pace_3,
+             distance,
+             calories,
+             marker-map  
         ) VALUES (
             :id,
             :user_id,
             :created_at,
+            :pace_1,
+            :pace_2,
+            :pace_3,
             :time_record,
             :distance
+            :calories,
+            :marker-map 
         )
     """), record)
 
@@ -54,20 +63,15 @@ def get_user(user_id):
     user = current_app.database.execute(text("""
         SELECT
             id,
-            nickname,
             height,
             weight,
-            age,
             photo
         FROM user
-        WHERE nickname = :user_id   
-    """), {
-        'user_id' : user_id
-    }).fetchone()
+        WHERE id = :user_id   
+    """), user_id)
 
     return {
         'id': user['id'],
-        'nickname': user['nickname'],
         'height': user['height'],
         'weight': user['weight'],
         'age': user['age'],
@@ -111,6 +115,8 @@ def create_app(test_config = None):
             new_user = get_user(user_id)
 
             return jsonify(new_user)
+            #return jsonify(user_id)
+
 
         ## JUST for check data
 
@@ -157,7 +163,7 @@ def create_app(test_config = None):
     @app.route('/race-finish', methods=['POST'])
     def post_info():
         user_id = request.headers.get('user_id')
-        user = get_uesr(user_id)
+        user = get_user(user_id)
 
         # TODO: Should be modified with changed DB structure        
         cur_id = user['id']
