@@ -23,10 +23,10 @@ export function SignUpContextProvider({children}) {
     try {
       const res = await axios.post(
         'http://34.67.158.106:5000/nickname-check',
-        form.id,
+        form,
       );
     } catch (e) {
-      // throw new Error();
+      console.log(e);
     }
   };
 
