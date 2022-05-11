@@ -1,3 +1,4 @@
+import sys
 import jwt
 import bcrypt
 from flask import Flask, jsonify, current_app, Response, request, g
@@ -68,13 +69,13 @@ def get_user(user_id):
             photo
         FROM user
         WHERE id = :user_id   
-    """), user_id)
+    """), user_id = user_id).fetchone()
 
     return {
         'id': user['id'],
         'height': user['height'],
         'weight': user['weight'],
-        'age': user['age'],
+        'photo': user['photo'],
     } if user else None
 
 def get_user_id_and_password(email):
@@ -123,17 +124,18 @@ def create_app(test_config = None):
         elif request.method == 'GET':
             return get_user('eee')
 
-    @app.route("/nickname-check", methods = ['POST'])
+    @app.route("/nickname-check", methods = ['POST', 'GET'])
     def duplicate():
-        if request.method == 'POST':
-            cur_request = request.json
-            is_duplicate : bool = get_user(cur_request['nickname']) is not None
+        cur_request = request.json
+        is_duplicate = get_user(cur_request['id']) is not None
+        app.logger.info('is_duplicate check: %s', is_duplicate)
 
-            # When exist: 404, not exist: 200
-            if is_duplicate:
-                return '', 404
-            else:
-                return '', 200
+        # When exist: 404, not exist: 200
+        if is_duplicate:
+            return '', 404
+        else:
+            return f'{is_duplicate}', 200
+        
 
     @app.route('/login', methods=['POST'])
     def login():
