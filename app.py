@@ -1,3 +1,4 @@
+import json
 import sys
 import jwt
 import bcrypt
@@ -30,7 +31,7 @@ def insert_user(user):
             :weight,
             :photo
         )
-    """), user).lastrowid
+    """), user)
     return user['id']
 
 def insert_run_data(record):
@@ -69,13 +70,14 @@ def get_user(user_id):
             photo
         FROM user
         WHERE id = :user_id   
-    """), user_id = user_id).fetchone()
+    """),{
+        'user_id' :user_id
+    }).fetchone()
 
     return {
         'id': user['id'],
         'height': user['height'],
-        'weight': user['weight'],
-        'photo': user['photo'],
+        'weight': user['weight']
     } if user else None
 
 def get_user_id_and_password(email):
@@ -108,21 +110,25 @@ def create_app(test_config = None):
     def ping():
         return "pong"
 
+    @app.route("/test", methods=['GET'])
+    def test():
+        return jsonify(get_user(1))
+
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
         if request.method == 'POST':
             new_user = request.json
-            user_id= insert_user(new_user)
-            new_user = get_user(user_id)
-
-            return jsonify(new_user)
-            #return jsonify(user_id)
-
+            new_user_id = insert_user(new_user)#.encode('utf-8')
+            app.logger.info('%s', new_user_id)
+            app.logger.info('%s', type(new_user_id))
+            #return str(json.dumps(new_user_id))
+            new_user = get_user('test74')
+            app.logger.info('%s', new_user['weight'])
+            return new_user
 
         ## JUST for check data
-
         elif request.method == 'GET':
-            return get_user('eee')
+            return get_user(1)
 
     @app.route("/nickname-check", methods = ['POST', 'GET'])
     def duplicate():
@@ -212,3 +218,8 @@ def login_required(f):
 
         return f(*args, **kwargs)
     return decorated_function
+
+"""
+export FLASK_ENV=development
+FLASK_ENV=1 FLASK_DEBUG=1 flask run
+"""
