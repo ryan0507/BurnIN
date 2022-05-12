@@ -14,19 +14,18 @@ import userStorages from '../../storages/userStorages';
 
 function DashboardScreen() {
   const [nickname, setNickname] = useState('');
-  const [photo, setPhoto] = useState('');
   useEffect(() => {
     userStorages.get().then(userInfo => {
-      setNickname(userInfo.nickname);
-      setPhoto('data:image/;base64,' + userInfo.photo.assets[0].base64);
+      setNickname(userInfo.id);
     });
   }, []);
+
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
       <ScrollView style={styles.block}>
         <OrangeBlock>
-          <Profile nickname={nickname} photo={photo} />
+          <Profile nickname={nickname} />
           <WhiteBlock>
             <ProgessRecord />
           </WhiteBlock>
@@ -102,13 +101,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function Profile({nickname, photo}) {
+function Profile({nickname}) {
   return (
     <View style={styles.profileBlock}>
-      <Image
-        source={{uri: photo}}
-        style={{width: 52, height: 52, borderRadius: 26, marginRight: 12}}
-      />
       <Text style={{fontSize: 15, fontWeight: '700', color: '#ffffff'}}>
         {nickname}
       </Text>

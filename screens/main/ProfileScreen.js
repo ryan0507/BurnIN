@@ -10,16 +10,13 @@ import userStorages from '../../storages/userStorages';
 function ProfileScreen() {
   const navigation = useNavigation();
   const [nickname, setNickname] = useState('');
-  const [photo, setPhoto] = useState('');
   useEffect(() => {
     userStorages.get().then(userInfo => {
       setNickname(userInfo.nickname);
-      setPhoto('data:image/;base64,' + userInfo.photo.assets[0].base64);
     });
   }, []);
   return (
     <View style={styles.block}>
-      <Image source={{uri: photo}} style={styles.profileimg} />
       <Text style={styles.text}>{nickname}</Text>
       <CustomSmallBtn
         title="프로필 편집"

@@ -47,7 +47,9 @@ export function WorkOutContextProvider({children}) {
         distance: distance.toFixed(2),
         time,
         calories,
-        paces,
+        pace_1: paces[0],
+        pace_2: paces[1],
+        pace_3: paces[2],
       };
       console.log(data);
 

@@ -69,7 +69,6 @@ function GetNickname({navigation}) {
         title="아이디"
         placeholder="5~20자의 영문 숫자 조합"
         smallBtn
-        getPhoto
       />
       <Text
         style={{

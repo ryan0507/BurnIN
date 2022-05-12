@@ -12,7 +12,6 @@ export function SignUpContextProvider({children}) {
     passwd: '',
     height: '165', // 키 기본값
     weight: '60', // 몸무게 기본값
-    photo: '',
   });
 
   const createChangeTextHandler = name => value => {
@@ -30,7 +29,6 @@ export function SignUpContextProvider({children}) {
       passwd: '',
       height: '165', // 키 기본값
       weight: '60', // 몸무게 기본값
-      photo: '',
     });
   };
 
@@ -48,20 +46,7 @@ export function SignUpContextProvider({children}) {
   const signUp = async () => {
     try {
       // send new user's information
-      const body = new FormData();
-      body.append('photo', {
-        type: 'image/jpeg',
-        base64: form.photo,
-        name: 'profile.jpeg',
-      });
-      body.append('id', form.id);
-      body.append('passwd', form.passwd);
-      body.append('weight', form.weight);
-      body.append('height', form.height);
-
-      const res = await axios.post('http://34.67.158.106:5000/sign-up', body, {
-        headers: {'content-type': 'multipart/form-data'},
-      });
+      const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
 
       // save token at loginStorage
       // const {token} = res;

@@ -3,9 +3,8 @@ import {View, Text, StyleSheet} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import SignUpContext from '../../contexts/SignUpContext';
 import UnderlinedInput from '../../components/UnderlinedInput';
-import PhotoInput from '../../components/PhotoInput';
 
-function SignUpInput({field, getPhoto, placeholder, picker, title, ...rest}) {
+function SignUpInput({field, placeholder, picker, title, ...rest}) {
   // 사용자가 입력한 값을 지정한 필드에 저장
 
   const {form, createChangeTextHandler} = useContext(SignUpContext);
@@ -19,6 +18,7 @@ function SignUpInput({field, getPhoto, placeholder, picker, title, ...rest}) {
         items.push({
           label: `${i}cm`,
           value: i,
+          key: i,
         });
       }
     } else if (type === 'weight') {
@@ -26,6 +26,7 @@ function SignUpInput({field, getPhoto, placeholder, picker, title, ...rest}) {
         items.push({
           label: `${i}kg`,
           value: i,
+          key: i,
         });
       }
     }
@@ -36,7 +37,6 @@ function SignUpInput({field, getPhoto, placeholder, picker, title, ...rest}) {
   const wieghts = useMemo(() => generateItems('weight'), [generateItems]);
   return (
     <View style={styles.block}>
-      {getPhoto && <PhotoInput />}
       {picker ? (
         <View
           style={[
