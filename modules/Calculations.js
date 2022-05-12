@@ -1,5 +1,6 @@
 // Function to calculate Distance
 export const calDistance = (lat1, lon1, lat2, lon2) => {
+  console.log(lat1, lon1, lat2, lon2);
   const toRadian = angle => (Math.PI / 180) * angle;
   const distance = (a, b) => (Math.PI / 180) * (a - b);
 
@@ -22,8 +23,9 @@ export const calDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 export const calCalories = (weight, sec) => {
-  const min = parseInt(sec / 1000 / 60);
-  return 10 * 3.5 * weight * min * 5;
+  let min = parseInt(sec / 60, 10);
+  let cal = ((10 * 3.5 * weight * min) / 1000) * 5;
+  return cal.toFixed(0);
 };
 
 export const calPace = (dist, time_seconds) => {
@@ -45,8 +47,6 @@ export const calPace = (dist, time_seconds) => {
 };
 
 export const secondsToHm = seconds => {
-  seconds = Number(seconds);
-
   var hours = Math.floor(seconds / 3600);
   var minutes = Math.floor((seconds % 3600) / 60);
   var second = Math.floor((seconds % 3600) % 60);
@@ -68,19 +68,6 @@ export const pacePresentation = pace => {
   const paceSecs = (pace % 1).toFixed(1) * 60;
   pace = paceMins + "'" + paceSecs + '"';
   return pace;
-};
-
-export const getDayName = () => {
-  var days = [
-    '일요일',
-    '월요일',
-    '화요일',
-    '수요일',
-    '목요일',
-    '금요일',
-    '토요일',
-  ];
-  return days[new Date().getDay()];
 };
 
 export const getTimeOfDay = () => {

@@ -5,6 +5,7 @@ import InputScreen from '../InputScreen';
 import CustomBtn from '../../components/CustomBtn';
 import SignUpContext from '../../contexts/SignUpContext';
 import {StatusBar, Text, View} from 'react-native';
+import {isId, isPassword} from '../../modules/Regex';
 
 function SignUpStack() {
   const Stack = createNativeStackNavigator();
@@ -34,48 +35,94 @@ function SignUpStack() {
 
 export default SignUpStack;
 function GetNickname({navigation}) {
-  const {sendNickname} = useContext(SignUpContext);
-  const [noti, setNoti] = useState(false);
+  const {sendNickname, form} = useContext(SignUpContext);
+  const [noti, setNoti] = useState(0);
+  const msgs = [
+    '',
+    '동일한 아이디가 존재합니다.',
+    '아이디 형식을 확인해주세요. 영문으로 시작해야 해요!',
+  ];
   const onPress = () => {
-    sendNickname()
-      .then(() => {
-        navigation.navigate('GetPassword');
-      })
-      .catch(() => {
-        // 닉네임 중복 O - 노티 메시지 띄우기
-        setNoti(true);
-        setTimeout(() => {
-          setNoti(false);
-        }, 5000);
-      });
+    if (isId(form.id) === false) {
+      setNoti(2);
+      setTimeout(() => {
+        setNoti(0);
+      }, 3000);
+    } else {
+      sendNickname()
+        .then(() => {
+          navigation.navigate('GetPassword');
+        })
+        .catch(() => {
+          // 닉네임 중복 O - 노티 메시지 띄우기
+          setNoti(1);
+          setTimeout(() => {
+            setNoti(0);
+          }, 5000);
+        });
+    }
   };
   return (
     <InputScreen>
-      <SignUpInput field="id" placeholder="닉네임" smallBtn getPhoto />
-      <View style={!noti && {opacity: 0}}>
-        <Text style={{fontSize: 12, width: '100%', marginTop: 10}}>
-          동일한 아이디가 존재합니다.
-        </Text>
-      </View>
-      <CustomBtn title="다음으로" onPress={onPress} />
+      <SignUpInput
+        field="id"
+        title="아이디"
+        placeholder="5~20자의 영문 숫자 조합"
+        smallBtn
+        getPhoto
+      />
+      <Text
+        style={{
+          fontSize: 12,
+          width: '100%',
+          marginTop: 10,
+        }}>
+        {msgs[noti]}
+      </Text>
+      <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );
 }
 
 function GetPassword({navigation}) {
+  const [noti, setNoti] = useState(false);
+  const {form} = useContext(SignUpContext);
+
   const onPress = () => {
-    navigation.navigate('GetHeightWeight');
+    if (!isPassword(form.passwd)) {
+      setNoti(true);
+      setTimeout(() => {
+        setNoti(false);
+      }, 3000);
+    } else {
+      navigation.navigate('GetHeightWeight');
+    }
   };
   return (
     <InputScreen>
-      <SignUpInput field="passwd" placeholder="비밀번호" secureTextEntry />
+      <SignUpInput
+        field="passwd"
+        title="비밀번호 "
+        placeholder="8~15자의 영문 숫자 조합"
+        secureTextEntry
+      />
+      <View style={noti ? {width: '100%'} : {width: '100%', opacity: 0}}>
+        <Text
+          style={{
+            fontSize: 12,
+            width: '100%',
+            marginTop: 10,
+          }}>
+          비밀번호 형식을 확인해주세요.
+        </Text>
+      </View>
       <CustomBtn title="다음" onPress={onPress} />
     </InputScreen>
   );
 }
 
 function GetHeightWeight({navigation}) {
-  const {signUp} = useContext(SignUpContext);
+  const {signUp, clearForm} = useContext(SignUpContext);
 
   const onPress = () => {
     // 서버로 모든 데이터 전송
@@ -83,6 +130,7 @@ function GetHeightWeight({navigation}) {
       .then(() => {
         // 응답 성공 시 Main으로 화면 이동
         navigation.navigate('MainTab');
+        clearForm();
       })
       .catch(error => {
         console.log(error);
@@ -91,8 +139,8 @@ function GetHeightWeight({navigation}) {
 
   return (
     <InputScreen>
-      <SignUpInput field="height" placeholder="키" picker />
-      <SignUpInput field="weight" placeholder="몸무게" picker />
+      <SignUpInput title="키" field="height" placeholder="키" picker />
+      <SignUpInput title="몸무게" field="weight" placeholder="몸무게" picker />
       <CustomBtn title="회원가입 완료" onPress={onPress} />
     </InputScreen>
   );

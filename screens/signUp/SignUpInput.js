@@ -5,7 +5,7 @@ import SignUpContext from '../../contexts/SignUpContext';
 import UnderlinedInput from '../../components/UnderlinedInput';
 import PhotoInput from '../../components/PhotoInput';
 
-function SignUpInput({field, getPhoto, placeholder, picker, ...rest}) {
+function SignUpInput({field, getPhoto, placeholder, picker, title, ...rest}) {
   // 사용자가 입력한 값을 지정한 필드에 저장
 
   const {form, createChangeTextHandler} = useContext(SignUpContext);
@@ -43,7 +43,7 @@ function SignUpInput({field, getPhoto, placeholder, picker, ...rest}) {
             styles.innerBlock,
             field === 'height' && styles.marginBottom,
           ]}>
-          <Text style={styles.text}>{placeholder}</Text>
+          <Text style={styles.text}>{title}</Text>
           <View style={styles.pickerBlock}>
             <RNPickerSelect
               onValueChange={onChangeText}
@@ -57,7 +57,7 @@ function SignUpInput({field, getPhoto, placeholder, picker, ...rest}) {
         </View>
       ) : (
         <View style={styles.innerBlock}>
-          <Text style={styles.text}>{placeholder}</Text>
+          <Text style={styles.text}>{title}</Text>
           <UnderlinedInput
             placeholder={placeholder}
             onChangeText={onChangeText}

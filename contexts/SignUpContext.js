@@ -10,13 +10,28 @@ export function SignUpContextProvider({children}) {
   const [form, setForm] = useState({
     id: '',
     passwd: '',
-    height: '',
-    weight: '',
+    height: '165', // 키 기본값
+    weight: '60', // 몸무게 기본값
     photo: '',
   });
 
   const createChangeTextHandler = name => value => {
-    setForm({...form, [name]: value});
+    if (typeof value == 'string') {
+      let lowerCase = value.toLowerCase();
+      setForm({...form, [name]: lowerCase});
+    } else {
+      setForm({...form, [name]: value});
+    }
+  };
+
+  const clearForm = () => {
+    setForm({
+      id: '',
+      passwd: '',
+      height: '165', // 키 기본값
+      weight: '60', // 몸무게 기본값
+      photo: '',
+    });
   };
 
   const sendNickname = async () => {
@@ -33,12 +48,24 @@ export function SignUpContextProvider({children}) {
   const signUp = async () => {
     try {
       // send new user's information
-      console.log(form);
-      const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
+      const body = new FormData();
+      body.append('photo', {
+        type: 'image/jpeg',
+        base64: form.photo,
+        name: 'profile.jpeg',
+      });
+      body.append('id', form.id);
+      body.append('passwd', form.passwd);
+      body.append('weight', form.weight);
+      body.append('height', form.height);
+
+      const res = await axios.post('http://34.67.158.106:5000/sign-up', body, {
+        headers: {'content-type': 'multipart/form-data'},
+      });
 
       // save token at loginStorage
-      const {token} = res;
-      await loginStorages.set(token);
+      // const {token} = res;
+      // await loginStorages.set(token);
 
       // save user info at userStorage
       await userStorages.set(form);
@@ -49,7 +76,7 @@ export function SignUpContextProvider({children}) {
 
   return (
     <SignUpContext.Provider
-      value={{form, createChangeTextHandler, sendNickname, signUp}}>
+      value={{form, createChangeTextHandler, sendNickname, signUp, clearForm}}>
       {children}
     </SignUpContext.Provider>
   );

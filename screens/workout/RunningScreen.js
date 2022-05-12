@@ -27,10 +27,11 @@ function RunningScreen({route}) {
   const {dispatch, paces} = useContext(WorkOutContext);
 
   const watchId = useRef(null);
+  const localTime = useRef(moment.duration(0, 'seconds'));
   const weight = useRef(0);
 
-  const [lat, setLat] = useState(route.params.lat);
-  const [lon, setLon] = useState(route.params.lon);
+  const lat = useRef(route.params.lat);
+  const lon = useRef(route.params.lon);
   const [currentPace, setCurrentPace] = useState('-\'--"');
   const [calories, setCalories] = useState(0);
   const [totalDist, setTotalDist] = useState(0);
@@ -39,6 +40,7 @@ function RunningScreen({route}) {
 
   const tick = () => {
     setTime(prevTime => prevTime.clone().add(1, 'seconds'));
+    localTime.current = localTime.current.clone().add(1, 'seconds');
   };
 
   const timer = useInterval(() => {
@@ -59,19 +61,22 @@ function RunningScreen({route}) {
   };
 
   const getLocationUpdates = () => {
+    console.log('add geolocation');
     watchId.current = Geolocation.watchPosition(
       position => {
         const {latitude, longitude} = position.coords;
         const newLocation = {latitude: latitude, longitude: longitude};
         dispatch({type: 'UPDATE_LOCATION', payload: newLocation});
 
-        const newDist = calDistance(lat, lon, latitude, longitude);
+        const newDist = calDistance(
+          lat.current,
+          lon.current,
+          latitude,
+          longitude,
+        );
         setTotalDist(prevDist => parseFloat(prevDist) + parseFloat(newDist));
-        setCalories(calCalories(weight.current, time));
-        setCurrentPace(pacePresentation(calPace(totalDist, time)));
-
-        setLat(latitude);
-        setLon(longitude);
+        lat.current = latitude;
+        lon.current = longitude;
       },
       error => {
         console.log(error);
@@ -86,9 +91,16 @@ function RunningScreen({route}) {
   };
 
   useEffect(() => {
-    userStorages.get().then(userInfo => {
-      weight.current = userInfo.weight;
-    });
+    async function getWeight() {
+      try {
+        userStorages.get().then(userInfo => {
+          weight.current = userInfo.weight;
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getWeight();
     const newLocation = {
       latitude: route.params.lat,
       longitude: route.params.lon,
@@ -99,6 +111,7 @@ function RunningScreen({route}) {
   useEffect(() => {
     return () => {
       removeLocationUpdates();
+      dispatch({type: 'CLEAR_WORKOUT'});
     };
   }, []);
 
@@ -112,6 +125,13 @@ function RunningScreen({route}) {
       removeLocationUpdates();
     });
   }, [navigation]);
+
+  useEffect(() => {
+    setCalories(calCalories(weight.current, localTime.current.asSeconds()));
+    setCurrentPace(
+      pacePresentation(calPace(totalDist, localTime.current.asSeconds())),
+    );
+  }, [totalDist]);
 
   useEffect(() => {
     console.log(paces);

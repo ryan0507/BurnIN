@@ -6,7 +6,6 @@ const initialState = {
   distance: '', // float
   time: '', // int(sec)
   calories: '', // int
-  averagePace: '', // int(sec)
   paces: [], // int(sec) arr
   locations: [], // obj arr
 };
@@ -26,10 +25,9 @@ function reducer(state, action) {
     case 'UPDATE_RECORD':
       return {
         ...state,
-        distance: action.payload.distacne,
+        distance: action.payload.distance,
         time: action.payload.time,
         calories: action.payload.calories,
-        averagePace: action.payload.averagePace,
       };
     case 'CLEAR_WORKOUT':
       return initialState;
@@ -42,14 +40,21 @@ export function WorkOutContextProvider({children}) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {paces, locations} = state;
 
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
-
   const sendRecord = async () => {
+    const {distance, time, calories, paces} = state;
     try {
-      console.log(state);
-      const res = await axios.post('url', state);
+      const data = {
+        distance: distance.toFixed(2),
+        time,
+        calories,
+        paces,
+      };
+      console.log(data);
+
+      const res = await axios.post(
+        'http://34.67.158.106:5000/race-finish',
+        data,
+      );
     } catch (e) {
       console.log(e);
     }

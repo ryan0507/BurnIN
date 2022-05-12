@@ -7,7 +7,7 @@ import WorkOutContext from '../../contexts/WorkOutContext';
 
 function ResultScreen({navigation, route}) {
   const {time, totalDist, calories, currentPace} = route.params;
-  const {locations, dispatch} = useContext(WorkOutContext);
+  const {locations, dispatch, sendRecord} = useContext(WorkOutContext);
   console.log(locations);
 
   return (
@@ -58,7 +58,16 @@ function ResultScreen({navigation, route}) {
                 <Text>{currentPace}</Text>
                 <Text>페이스</Text>
               </View>
+              <View />
             </View>
+            <Pressable
+              onPress={() => {
+                sendRecord().then(() => {
+                  navigation.navigate('MainTab', {screen: 'WorkOutScreen'});
+                });
+              }}>
+              <Text>기록 저장</Text>
+            </Pressable>
           </View>
         </View>
       </View>

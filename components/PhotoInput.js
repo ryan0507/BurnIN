@@ -21,8 +21,8 @@ function PhotoInput() {
           return;
         }
         setResponse(res);
-        // onChange(res.assets[0].uri);
-        onChange(null);
+        console.log(res.assets[0].base64);
+        onChange(res.assets[0].base64);
       },
     );
   };

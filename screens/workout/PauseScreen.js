@@ -6,23 +6,21 @@ import WorkOutContext from '../../contexts/WorkOutContext';
 
 function PauseScreen({navigation, route}) {
   const {time, totalDist, calories, currentPace} = route.params;
-  const {dispatch, sendRecord} = useContext(WorkOutContext);
+  const {dispatch} = useContext(WorkOutContext);
 
   const onPress = () => {
     const record = {
       time: time.asSeconds(),
       distance: totalDist,
       calories,
-      averagePace: currentPace,
     };
     dispatch({type: 'UPDATE_RECORD', payload: record});
-    sendRecord().then(() => {
-      navigation.navigate('ResultScreen', {
-        time,
-        totalDist,
-        calories,
-        currentPace,
-      });
+
+    navigation.navigate('ResultScreen', {
+      time,
+      totalDist,
+      calories,
+      currentPace,
     });
   };
 
