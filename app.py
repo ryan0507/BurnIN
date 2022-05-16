@@ -115,7 +115,7 @@ def get_top10_rank():
         order by race_rank
         limit 10;
     """))
-    return jsonify([dict(t) for t in total_rank][0])#, ensure_ascii = False)
+    return jsonify([dict(t) for t in total_rank])#, ensure_ascii = False)
 
 def get_numUser_avg():
     num = current_app.database.execute(text("""
@@ -193,6 +193,33 @@ def mypace_check(user_id):
     json_data['pace3_diff'] = b['pace3_diff']
     return json_data
 
+def graph_line():
+    graph = current_app.database.execute(text("""
+        select created_at, pace_3
+            from runinfo
+            where pace_3 > 0
+            order by created_at
+
+    """))
+    return jsonify([dict(g) for g in graph][0])
+
+
+def graph_bar():
+    graph = current_app.database.execute(text("""
+        WITH RECURSIVE TEMP AS (
+            SELECT 0 AS HOUR
+            UNION ALL
+            SELECT HOUR+1 FROM TEMP
+            WHERE HOUR<23
+        )
+        select hour, count(case when pace_3 > 0 then hour(created_at) end) as cnt
+        from TEMP
+        left join runinfo as r on TEMP.hour = hour(r.created_at) 
+        group by hour
+        order by hour asc
+    """))
+    return jsonify([dict(g) for g in graph][0])
+
 def get_user_id_and_password(email):
     row = current_app.database.execute(text("""    
         SELECT
@@ -227,10 +254,11 @@ def create_app(test_config = None):
     @app.route("/test", methods=['GET'])
     def test():
         #return get_current_user_rank("유저1")
-        #return get_top10_rank()
+        return get_top10_rank()
         #return get_numUser_avg()
         #return get_rank("유저1")
-        return mypace_check("유저1")
+        #return mypace_check("유저3")
+        #return graph_bar()
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
@@ -270,6 +298,11 @@ def create_app(test_config = None):
     @app.route('/race-ranking', methods=['GET'])
     def race_ranking():
         return get_top10_rank()
+
+    @app.route('/current-user-rank', methods=['GET'])
+    def current_user_rank():
+        user = request.json
+        return get_current_user_rank(user['user_id'])
 
     @app.route('/login', methods=['POST'])
     def login():
