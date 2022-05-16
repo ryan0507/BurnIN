@@ -81,6 +81,42 @@ def get_user(user_id):
         'weight': user['weight']
     } if user else None
 
+def get_current_user_rank(user_id):
+    current_user = current_app.database.execute(text("""
+        select 
+            user_id, 
+            race_rank, 
+            pace_3
+        from (
+        select 
+            user_id,  
+            pace_3,
+            rank() over(order by min(pace_3) asc) as race_rank
+        from runinfo
+        where pace_3 > 0
+        group by user_id, pace_3
+        order by min(pace_3)) as r
+        where user_id = :user_id
+        limit 1;
+    """),{'user_id':user_id
+    })
+
+    return json.dumps([dict(c) for c in current_user])
+
+def get_top10_rank():
+    total_rank = current_app.database.execute(text("""
+        select 
+            user_id as nickname, 
+            rank() over(order by min(pace_3) asc) as race_rank,
+            min(pace_3) as record
+        from runinfo
+        where pace_3 > 0
+        group by user_id
+        order by race_rank
+        limit 10;
+    """))
+    return json.dumps([dict(t) for t in total_rank])
+
 def get_user_id_and_password(email):
     row = current_app.database.execute(text("""    
         SELECT
@@ -113,7 +149,8 @@ def create_app(test_config = None):
 
     @app.route("/test", methods=['GET'])
     def test():
-        return jsonify(get_user(1))
+        #return get_current_user_rank("유저1")
+        return get_top10_rank()
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
@@ -149,7 +186,10 @@ def create_app(test_config = None):
             return '', 404
         else:
             return f'{is_duplicate}', 200
-        
+
+    @app.route('/race-ranking', methods=['GET'])
+    def race_ranking():
+        return get_top10_rank()
 
     @app.route('/login', methods=['POST'])
     def login():
