@@ -84,9 +84,9 @@ def get_user(user_id):
 def get_current_user_rank(user_id):
     current_user = current_app.database.execute(text("""
         select 
-            user_id, 
+            user_id as nickname, 
             race_rank, 
-            pace_3
+            pace_3 as record
         from (
         select 
             user_id,  
@@ -101,7 +101,7 @@ def get_current_user_rank(user_id):
     """),{'user_id':user_id
     })
 
-    return json.dumps([dict(c) for c in current_user])
+    return jsonify([dict(c) for c in current_user][0])#, ensure_ascii = False)
 
 def get_top10_rank():
     total_rank = current_app.database.execute(text("""
@@ -115,7 +115,83 @@ def get_top10_rank():
         order by race_rank
         limit 10;
     """))
-    return json.dumps([dict(t) for t in total_rank])
+    return jsonify([dict(t) for t in total_rank][0])#, ensure_ascii = False)
+
+def get_numUser_avg():
+    num = current_app.database.execute(text("""
+        select count(distinct user_id) as participant
+            from runinfo
+            where pace_3 > 0;
+    """))
+
+    avg = current_app.database.execute(text("""
+        select avg(pace_3) as average
+        from (
+            select *, rank() over(partition by r.user_id order by r.pace_3 asc) as rn
+            from runinfo as r where pace_3 > 0) as ranking
+        where ranking.rn = 1;
+    """))
+    json_data = {}
+    a = [dict(n) for n in num][0]
+    b = [dict(a) for a in avg][0]
+    json_data['participant'] = a['participant']
+    json_data['average'] = b['average']
+    return json_data
+
+def get_rank(user_id):
+    rank = current_app.database.execute(text("""
+        select 
+            user_id,
+            race_rank, 
+            race_rank - 1 as rank_up,
+            diff
+        from(select 
+            rank() over(order by pace_3 asc) as race_rank, 
+            user_id, 
+            pace_3, 
+            lag(pace_3) over (order by pace_3 asc) as rank_up,
+            (pace_3 - lag(pace_3) over (order by pace_3 asc)) as diff
+            from runinfo
+            where pace_3 > 0
+            group by user_id, pace_3
+            order by race_rank) as r
+        where user_id = :user_id
+        limit 1;
+    """),{'user_id':user_id
+    })
+    return jsonify([dict(r) for r in rank][0])
+
+def mypace_check(user_id):
+    record = current_app.database.execute(text("""
+        select 
+            (pace_3 - lead(pace_3) over (order by created_at desc)) as diff
+        from runinfo
+        where user_id = :user_id and pace_3 > 0
+        order by created_at desc
+        limit 1;
+    """),{'user_id':user_id
+    })
+
+    check = current_app.database.execute(text("""
+        select 
+            (pace_1 - lead(pace_1) over (order by created_at desc)) as pace1_diff, 
+            ((pace_2 - pace_1) - lead(pace_2 - pace_1) over (order by created_at desc)) as pace2_diff, 
+            ((pace_3-pace_2) - lead(pace_3-pace_2) over (order by created_at desc)) as pace3_diff
+        from runinfo
+        where user_id = :user_id and pace_3 > 0
+        order by created_at desc 
+        limit 1;
+        """), {'user_id': user_id
+    })
+
+    json_data = {}
+    a = [dict(n) for n in record][0]
+    b = [dict(a) for a in check][0]
+    json_data['diff'] = a['diff']
+    json_data['pace1_diff'] = b['pace1_diff']
+    json_data['pace2_diff'] = b['pace2_diff']
+    json_data['pace3_diff'] = b['pace3_diff']
+    return json_data
 
 def get_user_id_and_password(email):
     row = current_app.database.execute(text("""    
@@ -133,6 +209,7 @@ def get_user_id_and_password(email):
 
 def create_app(test_config = None):
     app = Flask(__name__)
+    app.config['JSON_AS_ASCII'] = False
     app.json_encoder = CustomJSONEncoder
 
     if test_config is None:
@@ -150,7 +227,10 @@ def create_app(test_config = None):
     @app.route("/test", methods=['GET'])
     def test():
         #return get_current_user_rank("유저1")
-        return get_top10_rank()
+        #return get_top10_rank()
+        #return get_numUser_avg()
+        #return get_rank("유저1")
+        return mypace_check("유저1")
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
