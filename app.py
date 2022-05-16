@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
 from functools  import wraps
 import datetime
+import base64
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -86,7 +87,7 @@ def get_user_id_and_password(email):
             id,
             passwd
         FROM user
-        WHERE email = :email
+        WHERE id = :email
     """), {'email' : email}).fetchone()
 
     return {
@@ -118,13 +119,20 @@ def create_app(test_config = None):
     def sign_up():
         if request.method == 'POST':
             new_user = request.json
+            
+            app.logger.info('Image Type : %s', type(new_user['body']['photo']['base64']))
+            return '', 200
+            # app.logger.error('%s', type(new_user['id']))
+            # new_user['photo'] = new_user['photo']['base64']
+            # app.logger.info('%s', new_user['photo'])
+            
             new_user_id = insert_user(new_user)#.encode('utf-8')
             app.logger.info('%s', new_user_id)
             app.logger.info('%s', type(new_user_id))
+
             #return str(json.dumps(new_user_id))
-            new_user = get_user('test74')
             app.logger.info('%s', new_user['weight'])
-            return new_user
+            return '', 200
 
         ## JUST for check data
         elif request.method == 'GET':
@@ -146,24 +154,37 @@ def create_app(test_config = None):
     @app.route('/login', methods=['POST'])
     def login():
         credential = request.json
-        email = credential['nickname']
+        email = credential['id']
         password = credential['passwd']
         user_credential = get_user_id_and_password(email)
 
-        if user_credential and bcrypt.checkpw(password.encode('UTF-8'),
-                                              user_credential['hashed_password'].encode('UTF-8')):
-            user_id = user_credential['id']
+        # if user_credential and bcrypt.checkpw(password.encode('UTF-8'),
+        #                                       user_credential['hashed_password'].encode('UTF-8')):
+        #     user_id = user_credential['id']
+        #     payload = {
+        #         'user_id': user_id,
+        #         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+        #     }
+        #     token = jwt.encode(payload, app.config['JWT_SECRET_KEY'], 'HS256')
+
+        #     return jsonify({
+        #         'access_token': token.decode('UTF-8')
+        #     })
+
+        if user_credential and password == user_credential['passwd']:
             payload = {
-                'user_id': user_id,
-                'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
-            }
+            'user_id': user_credential['id'],
+            'exp': datetime.datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+            }   
+            
             token = jwt.encode(payload, app.config['JWT_SECRET_KEY'], 'HS256')
 
             return jsonify({
-                'access_token': token.decode('UTF-8')
+                'access_token': token
             })
+
         else:
-            return '', 401
+            return 'Fucking Hackers', 401
 
     return app
 
