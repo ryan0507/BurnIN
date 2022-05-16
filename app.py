@@ -295,6 +295,23 @@ def recent_data(user_id):
                        })
     return jsonify([dict(d) for d in data][0])
 
+def last_week(user_id):
+    data = current_app.database.execute(text("""
+          select created_at, pace, round(distance,2) as distanceg
+            from (
+            select 
+                created_at,
+                ifnull(time_record/distance, 0) as pace,
+              ifnull(distance,0) as distance
+            from runinfo
+            where user_id = '유저1'
+            order by created_at desc
+            limit 7) as rn
+            order by created_at asc; 
+                """), {'user_id': user_id
+                       })
+    return jsonify([dict(d) for d in data][0])
+
 def get_user_id_and_password(email):
     row = current_app.database.execute(text("""    
         SELECT
@@ -335,7 +352,8 @@ def create_app(test_config = None):
         #return mypace_check("유저3")
         #return graph_bar()
         #return user_data("유저1")
-        return recent_data("유저1")
+        #return recent_data("유저1")
+        return last_week("유저1")
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
