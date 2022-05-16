@@ -220,6 +220,81 @@ def graph_bar():
     """))
     return jsonify([dict(g) for g in graph][0])
 
+def user_data(user_id):
+    data = current_app.database.execute(text("""
+        select 
+            round(sum(distance),2) as all_distance, 
+            sum(time_record) as all_time, 
+            count(*) as count_running,
+            avg(time_record/distance) as avg_pace
+        from runinfo
+        where user_id = :user_id;
+
+    """),{'user_id':user_id
+    })
+    return jsonify([dict(d) for d in data][0])
+
+def best_record(user_id):
+    dist = current_app.database.execute(text("""
+        select 
+            distance, 
+            date_format(created_at, '%Y-%m-%d %H:%i') as created_at
+        from runinfo
+        where user_id = :user_id
+        order by distance desc
+        limit 1;
+        """), {'user_id': user_id
+    })
+
+    pace = current_app.database.execute(text("""
+        select 
+            time_record/distance as pace,  
+            date_format(created_at, '%Y-%m-%d %H:%i') as created_at
+        from runinfo
+        where user_id =:user_id
+        order by time_record/distance asc
+        limit 1;
+            """), {'user_id': user_id
+                   })
+
+    record = current_app.database.execute(text("""
+        select 
+            time_record, 
+            date_format(created_at, '%Y-%m-%d %H:%i') as created_at
+        from runinfo
+        where user_id = :user_id
+        order by time_record asc
+        limit 1;
+                """), {'user_id': user_id
+                       })
+
+    json_data = {}
+    a = [dict(d) for d in dist][0]
+    b = [dict(p) for p in pace][0]
+    c = [dict(r) for r in record][0]
+    json_data['created_at_dist'] = a['created_at']
+    json_data['distance'] = a['distance']
+    json_data['created_at_pace'] = b['created_at']
+    json_data['pace'] = b['pace']
+    json_data['created_at_record'] = c['created_at']
+    json_data['time_record'] = c['time_record']
+    return json_data
+
+def recent_data(user_id):
+    data = current_app.database.execute(text("""
+            select 
+                date_format(created_at, '%Y-%m-%d %H:%i') as created_at, 3
+                distance, 
+                time_record/distance as pace,  
+                calories
+            from runinfo
+            where user_id = :user_id
+            order by created_at desc
+            limit 2;
+                """), {'user_id': user_id
+                       })
+    return jsonify([dict(d) for d in data][0])
+
 def get_user_id_and_password(email):
     row = current_app.database.execute(text("""    
         SELECT
@@ -254,11 +329,13 @@ def create_app(test_config = None):
     @app.route("/test", methods=['GET'])
     def test():
         #return get_current_user_rank("유저1")
-        return get_top10_rank()
+        #return get_top10_rank()
         #return get_numUser_avg()
         #return get_rank("유저1")
         #return mypace_check("유저3")
         #return graph_bar()
+        #return user_data("유저1")
+        return recent_data("유저1")
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
