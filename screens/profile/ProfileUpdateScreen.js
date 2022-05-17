@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import SignUpInput from '../signUp/SignUpInput';
-function ProfileUpdateScreen() {
+function ProfileUpdateScreen({navigation}) {
+  useLayoutEffect(() => {
+    navigation.setOptions({});
+  }, []);
   return (
     <View style={styles.block}>
       <SignUpInput field="nickname" placeholder="닉네임" smallBtn />

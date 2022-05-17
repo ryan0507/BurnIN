@@ -8,16 +8,17 @@ import loginStorages from '../../storages/loginStorages';
 
 function LoginScreen({navigation}) {
   const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
+  const [passwd, setPasswd] = useState('');
   const [noti, setNoti] = useState(false);
 
   const onPress = () => {
-    const form = {id, password};
+    const form = {id, passwd};
     login(form)
       .then(() => {
-        navigation.navigate('MainTab');
+        navigation.reset({routes: [{name: 'MainTab'}]});
       })
       .catch(e => {
+        console.log(e);
         setNoti(true);
         setTimeout(() => {
           setNoti(false);
@@ -40,8 +41,8 @@ function LoginScreen({navigation}) {
         <Text style={styles.text}>비밀번호</Text>
         <UnderlinedInput
           placeholder="비밀번호"
-          value={password}
-          onChangeText={setPassword}
+          value={passwd}
+          onChangeText={setPasswd}
         />
       </View>
       <Text style={[styles.noti, !noti && styles.inivisble]}>

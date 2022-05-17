@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, {createContext, useReducer, useEffect} from 'react';
 import axios from 'axios';
+import loginStorages from '../storages/loginStorages';
 
 const initialState = {
   distance: '', // float
@@ -52,19 +53,15 @@ export function WorkOutContextProvider({children}) {
         pace_3: paces[2],
       };
       console.log(data);
+      const options = {
+        headers: {Authorization: `Token ${token}`},
+      };
 
       const res = await axios.post(
         'http://34.67.158.106:5000/race-finish',
         data,
+        options,
       );
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const getRaceRecord = async () => {
-    try {
-      const res = await axios.get('url');
     } catch (e) {
       console.log(e);
     }
@@ -85,7 +82,6 @@ export function WorkOutContextProvider({children}) {
         paces,
         locations,
         sendRecord,
-        getRaceRecord,
         getAnalyticsRecord,
       }}>
       {children}

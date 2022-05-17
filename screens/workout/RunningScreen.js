@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, BackHandler} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation} from '@react-navigation/native';
@@ -21,6 +21,7 @@ import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import userStorages from '../../storages/userStorages';
 import WorkOutContext from '../../contexts/WorkOutContext';
+import PopUp from '../../components/PopUp';
 
 function RunningScreen({route}) {
   const navigation = useNavigation();
@@ -37,6 +38,7 @@ function RunningScreen({route}) {
   const [totalDist, setTotalDist] = useState(0);
   const [time, setTime] = useState(moment.duration(0, 'seconds'));
   const [focus, setFocus] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const tick = () => {
     setTime(prevTime => prevTime.clone().add(1, 'seconds'));
@@ -119,12 +121,29 @@ function RunningScreen({route}) {
     navigation.addListener('focus', e => {
       setFocus(true);
       getLocationUpdates();
+      BackHandler.addEventListener('hardwareBackPress', runningBackPress);
     });
     navigation.addListener('blur', e => {
       setFocus(false);
       removeLocationUpdates();
+      BackHandler.removeEventListener('hardwareBackPress', runningBackPress);
     });
   }, [navigation]);
+
+  const runningBackPress = () => {
+    setShowModal(true);
+    setFocus(false);
+    return true;
+  };
+
+  const quitRunning = () => {
+    navigation.goBack();
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setFocus(true);
+  };
 
   useEffect(() => {
     setCalories(calCalories(weight.current, localTime.current.asSeconds()));
@@ -134,7 +153,6 @@ function RunningScreen({route}) {
   }, [totalDist]);
 
   useEffect(() => {
-    console.log(paces);
     if (paces.length === 0 && totalDist >= 1) {
       dispatch({type: 'UPDATE_PACE', payload: time.asSeconds()});
     }
@@ -159,7 +177,7 @@ function RunningScreen({route}) {
           </View>
           <View style={styles.recordItem}>
             <Text style={[styles.recordText, styles.medium]}>
-              {`${time.hours() < 10 ? `0${time.hours()}` : time.hours()}:${
+              {`${
                 time.minutes() < 10 ? `0${time.minutes()}` : time.minutes()
               }:${time.seconds() < 10 ? `0${time.seconds()}` : time.seconds()}`}
             </Text>
@@ -189,6 +207,16 @@ function RunningScreen({route}) {
           wideMargin>
           <Icon name="pause" size={42} color="#EF9917" />
         </CircularBtn>
+        <PopUp
+          visible={showModal}
+          closeModal={closeModal}
+          quitRunning={quitRunning}
+          runningScreen>
+          <Text style={[styles.modalText]}>러닝을 종료하시겠습니까?</Text>
+          <Text style={styles.modalText}>
+            종료 시 러닝 기록이 저장되지 않습니다.
+          </Text>
+        </PopUp>
       </View>
     </>
   );
@@ -203,6 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 48,
+    position: 'relative',
   },
   recordsBlock: {
     flexDirection: 'row',
@@ -229,5 +258,10 @@ const styles = StyleSheet.create({
   },
   large: {
     fontSize: 100,
+    fontStyle: 'italic',
+  },
+  modalText: {
+    fontWeight: '700',
+    textAlign: 'center',
   },
 });

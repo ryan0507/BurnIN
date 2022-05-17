@@ -128,7 +128,7 @@ function GetHeightWeight({navigation}) {
     signUp()
       .then(() => {
         // 응답 성공 시 Main으로 화면 이동
-        navigation.navigate('MainTab');
+        navigation.reset({routes: [{name: 'MainTab'}]});
         clearForm();
       })
       .catch(error => {
@@ -139,7 +139,7 @@ function GetHeightWeight({navigation}) {
   return (
     <InputScreen>
       <SignUpInput title="키" field="height" placeholder="키" picker />
-      <SignUpInput title="몸무게" field="weight" placeholder="몸무게" picker />
+      <SignUpInput title="체중" field="weight" placeholder="몸무게" picker />
       <CustomBtn title="회원가입 완료" onPress={onPress} />
     </InputScreen>
   );

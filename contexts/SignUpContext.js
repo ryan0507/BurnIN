@@ -49,8 +49,8 @@ export function SignUpContextProvider({children}) {
       const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
 
       // save token at loginStorage
-      // const {token} = res;
-      // await loginStorages.set(token);
+      const {access_token} = res.data;
+      await loginStorages.set(access_token);
 
       // save user info at userStorage
       await userStorages.set(form);

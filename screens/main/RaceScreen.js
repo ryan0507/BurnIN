@@ -1,10 +1,46 @@
-import React, {useState} from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {View, Text, StyleSheet, StatusBar, Pressable} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
+import loginStorages from '../../storages/loginStorages';
+import axios from 'axios';
+import {secondsToHm} from '../../modules/Calculations';
 
 function RaceScreen() {
   const [tab, setTab] = useState('ranking');
+  const [ranking, setRanking] = useState([]);
+  const [personal, setPersonal] = useState();
+
+  useFocusEffect(
+    useCallback(() => {
+      let isFocused = true;
+      const getRaceRecord = async () => {
+        try {
+          const token = loginStorages.get();
+
+          const options = {
+            headers: {Authorization: `Token ${token}`},
+          };
+          const res = await axios.get(
+            'http://34.67.158.106:5000/current-user-rank',
+            options,
+          );
+          if (isFocused) {
+            setRanking(res);
+          }
+        } catch (e) {
+          throw new Error(e);
+        }
+      };
+      getRaceRecord();
+
+      return () => {
+        isFocused = false;
+      };
+    }, []),
+  );
+
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
@@ -29,7 +65,7 @@ function RaceScreen() {
             title="dashboard"
           />
         </View>
-        {tab === 'ranking' ? <Ranking /> : <DashBoard />}
+        {tab === 'ranking' ? <Ranking ranking={ranking} /> : <DashBoard />}
       </View>
     </>
   );
@@ -62,6 +98,7 @@ const styles = StyleSheet.create({
   },
   tabBtn: {
     marginRight: 18,
+    marginBottom: 18,
     backgroundColor: '#ffffff',
     borderRadius: 10,
     borderWidth: 1,
@@ -76,12 +113,61 @@ const styles = StyleSheet.create({
     borderColor: '#817D83',
     color: '#817D83',
   },
+  ranktable: {
+    paddingHorizontal: 16,
+  },
+  rankheader: {
+    flexDirection: 'row',
+    borderBottomColor: '#817D83',
+    borderBottomWidth: 1,
+    paddingBottom: 10,
+  },
+  rankrow: {
+    height: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: 'rgba(129, 125, 131, 0.6)',
+    borderBottomWidth: 0.5,
+  },
+  col1: {
+    flex: 1.5,
+    textAlign: 'center',
+  },
+  col2: {
+    flex: 6,
+  },
+  col3: {
+    flex: 3,
+  },
+  rankText: {
+    fontWeight: '500',
+    fontSize: 16,
+    color: '#262525',
+  },
 });
 
-function Ranking() {
+function Ranking({ranking}) {
+  const generateRanking = useCallback(() => {
+    return ranking.map((user, idx) => {
+      return (
+        <View key={idx} style={styles.rankrow}>
+          <Text style={[styles.rankText, styles.col1]}>{user.race_rank}</Text>
+          <Text style={[styles.rankText, styles.col2]}>{user.nickname}</Text>
+          <Text style={[styles.rankText, styles.col3]}>
+            {secondsToHm(user.record)}
+          </Text>
+        </View>
+      );
+    });
+  }, [ranking]);
   return (
-    <View>
-      <Text>랭킹</Text>
+    <View style={styles.ranktable}>
+      <View style={styles.rankheader}>
+        <Text style={[styles.rankText, styles.col1]}>순위</Text>
+        <Text style={[styles.rankText, styles.col2]}>닉네임</Text>
+        <Text style={[styles.rankText, styles.col3]}>기록</Text>
+      </View>
+      {generateRanking()}
     </View>
   );
 }

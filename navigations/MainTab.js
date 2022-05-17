@@ -1,5 +1,6 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useEffect} from 'react';
+import {BackHandler} from 'react-native';
 import WorkOutScreen from '../screens/main/WorkOutScreen';
 import RaceScreen from '../screens/main/RaceScreen';
 import DashboardScreen from '../screens/main/DashboardScreen';
@@ -9,13 +10,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const Tab = createBottomTabNavigator();
 
 function MainTab() {
-  useEffect(() => {
-    console.log('MainTab rendered');
-    return () => {
-      console.log('MainTab disappeared');
-    };
-  });
-
   return (
     <Tab.Navigator
       screenOptions={{

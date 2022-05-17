@@ -1,5 +1,5 @@
 import React, {useEffect, useCallback, useRef, useContext} from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, BackHandler} from 'react-native';
 import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WorkOutContext from '../../contexts/WorkOutContext';
@@ -15,12 +15,13 @@ function PauseScreen({navigation, route}) {
       calories,
     };
     dispatch({type: 'UPDATE_RECORD', payload: record});
-
-    navigation.navigate('ResultScreen', {
-      time,
-      totalDist,
-      calories,
-      currentPace,
+    navigation.reset({
+      routes: [
+        {
+          name: 'ResultScreen',
+          params: {time, totalDist, calories, currentPace},
+        },
+      ],
     });
   };
 
@@ -106,6 +107,7 @@ const styles = StyleSheet.create({
   },
   large: {
     fontSize: 100,
+    fontStyle: 'italic',
   },
   btnText: {
     fontSize: 18,

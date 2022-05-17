@@ -9,15 +9,21 @@ import userStorages from '../../storages/userStorages';
 
 function ProfileScreen() {
   const navigation = useNavigation();
-  const [nickname, setNickname] = useState('');
+  const [id, setId] = useState();
+  const [weight, setWeight] = useState();
+  const [height, setHeight] = useState();
   useEffect(() => {
-    userStorages.get().then(userInfo => {
-      setNickname(userInfo.nickname);
+    userStorages.get().then(savedInfo => {
+      setId(savedInfo.id);
+      setWeight(savedInfo.weight);
+      setHeight(savedInfo.height);
     });
   }, []);
   return (
     <View style={styles.block}>
-      <Text style={styles.text}>{nickname}</Text>
+      <Text style={styles.text}>아이디: {id}</Text>
+      <Text style={styles.text}>키: {height}</Text>
+      <Text style={styles.text}>몸무게: {weight}</Text>
       <CustomSmallBtn
         title="프로필 편집"
         wide
@@ -27,37 +33,6 @@ function ProfileScreen() {
           });
         }}
       />
-      <WhiteBlock ver2>
-        <View style={styles.btnsBlock}>
-          <CustomBtn
-            onPress={() => {
-              navigation.navigate('ProfileStack', {
-                screen: 'AnnouncementScreen',
-              });
-            }}>
-            <Icon name="circle-notifications" size={20} />
-            <Text>공지사항</Text>
-          </CustomBtn>
-          <CustomBtn
-            onPress={() => {
-              navigation.navigate('ProfileStack', {
-                screen: 'EventScreen',
-              });
-            }}>
-            <Icon name="thumb-up" size={20} />
-            <Text>이벤트</Text>
-          </CustomBtn>
-          <CustomBtn
-            onPress={() => {
-              navigation.navigate('ProfileStack', {
-                screen: 'SettingScreen',
-              });
-            }}>
-            <Icon name="settings" size={20} />
-            <Text>설정</Text>
-          </CustomBtn>
-        </View>
-      </WhiteBlock>
     </View>
   );
 }
@@ -72,20 +47,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 25,
     backgroundColor: '#ffffff',
-  },
-  btnsBlock: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 36,
-  },
-
-  profileimg: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 15,
   },
   text: {
     fontSize: 12,

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, BackHandler} from 'react-native';
 import {hasPermission} from '../../modules/LocationPermission';
 import Geolocation from 'react-native-geolocation-service';
 import {useNavigation} from '@react-navigation/native';
@@ -10,6 +10,7 @@ function WorkOutScreen() {
   const navigation = useNavigation();
   const [lat, setLat] = useState(0);
   const [lon, setLon] = useState(0);
+
   const getLocation = async () => {
     const locationPermission = await hasPermission();
     if (!locationPermission) {

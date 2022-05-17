@@ -47,17 +47,10 @@ export const calPace = (dist, time_seconds) => {
 };
 
 export const secondsToHm = seconds => {
-  var hours = Math.floor(seconds / 3600);
   var minutes = Math.floor((seconds % 3600) / 60);
   var second = Math.floor((seconds % 3600) % 60);
 
-  return (
-    ('0' + hours).slice(-2) +
-    ':' +
-    ('0' + minutes).slice(-2) +
-    ':' +
-    ('0' + second).slice(-2)
-  );
+  return ('0' + minutes).slice(-2) + ':' + ('0' + second).slice(-2);
 };
 
 export const pacePresentation = pace => {
