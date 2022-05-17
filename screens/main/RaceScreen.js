@@ -10,12 +10,12 @@ import {secondsToHm} from '../../modules/Calculations';
 function RaceScreen() {
   const [tab, setTab] = useState('ranking');
   const [ranking, setRanking] = useState([]);
-  const [personal, setPersonal] = useState();
+  const [personalRecord, setPersonalRecord] = useState('');
 
   useFocusEffect(
     useCallback(() => {
       let isFocused = true;
-      const getRaceRecord = async () => {
+      const getPersonalRecord = async () => {
         try {
           const token = await loginStorages.get();
 
@@ -27,13 +27,34 @@ function RaceScreen() {
             options,
           );
           if (isFocused) {
-            setRanking(res);
+            setPersonalRecord(res.data);
           }
         } catch (e) {
           throw new Error(e);
         }
       };
-      getRaceRecord();
+      getPersonalRecord();
+
+      return () => {
+        isFocused = false;
+      };
+    }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      let isFocused = true;
+      const getRankingRecord = async () => {
+        try {
+          const res = await axios.get('http://34.67.158.106:5000/race-ranking');
+          if (isFocused) {
+            setRanking(res.data);
+          }
+        } catch (e) {
+          throw new Error(e);
+        }
+      };
+      getRankingRecord();
 
       return () => {
         isFocused = false;
@@ -48,11 +69,11 @@ function RaceScreen() {
         <OrangeBlock>
           <Text style={styles.title}>레이스</Text>
           <WhiteBlock>
-            <Text style={styles.text}>5km 언택트 레이스 개최!</Text>
+            <Text style={styles.text}>3km 언택트 레이스 개최!</Text>
             <View style={{alignItems: 'center'}}>
               <Text style={[styles.text, styles.small]}>날씨가 좋은 5월!</Text>
               <Text style={[styles.text, styles.small]}>
-                5km를 누구보다 빠르게 뛰어보세요!
+                3km를 누구보다 빠르게 뛰어보세요!
               </Text>
             </View>
           </WhiteBlock>
@@ -65,7 +86,11 @@ function RaceScreen() {
             title="dashboard"
           />
         </View>
-        {tab === 'ranking' ? <Ranking ranking={ranking} /> : <DashBoard />}
+        {tab === 'ranking' ? (
+          <Ranking ranking={ranking} personalRecord={personalRecord} />
+        ) : (
+          <DashBoard />
+        )}
       </View>
     </>
   );
@@ -129,6 +154,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(129, 125, 131, 0.6)',
     borderBottomWidth: 0.5,
   },
+  toprow: {
+    backgroundColor: 'rgba(239, 217, 23, 0.37)',
+  },
   col1: {
     flex: 1.5,
     textAlign: 'center',
@@ -140,13 +168,18 @@ const styles = StyleSheet.create({
     flex: 3,
   },
   rankText: {
+    fontWeight: '400',
+    fontSize: 16,
+    color: '#878686',
+  },
+  rankTextBold: {
     fontWeight: '500',
     fontSize: 16,
-    color: '#262525',
+    color: '#000000',
   },
 });
 
-function Ranking({ranking}) {
+function Ranking({ranking, personalRecord}) {
   const generateRanking = useCallback(() => {
     return ranking.map((user, idx) => {
       return (
@@ -163,9 +196,22 @@ function Ranking({ranking}) {
   return (
     <View style={styles.ranktable}>
       <View style={styles.rankheader}>
-        <Text style={[styles.rankText, styles.col1]}>순위</Text>
-        <Text style={[styles.rankText, styles.col2]}>닉네임</Text>
-        <Text style={[styles.rankText, styles.col3]}>기록</Text>
+        <Text style={[styles.rankTextBold, styles.col1]}>순위</Text>
+        <Text style={[styles.rankTextBold, styles.col2]}>닉네임</Text>
+        <Text style={[styles.rankTextBold, styles.col3]}>기록</Text>
+      </View>
+      <View>
+        <View style={[styles.toprow, styles.rankrow]}>
+          <Text style={[styles.rankTextBold, styles.col1]}>
+            {personalRecord.race_rank}
+          </Text>
+          <Text style={[styles.rankTextBold, styles.col2]}>
+            {personalRecord.nickname}
+          </Text>
+          <Text style={[styles.rankTextBold, styles.col3]}>
+            {secondsToHm(personalRecord.record)}
+          </Text>
+        </View>
       </View>
       {generateRanking()}
     </View>
