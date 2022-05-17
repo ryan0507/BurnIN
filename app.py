@@ -30,7 +30,7 @@ def insert_user(user):
             :passwd,
             :height,
             :weight,
-            :photo
+            null
         )
     """), user)
     return user['id']
@@ -323,7 +323,7 @@ def create_app(test_config = None):
     else:
         app.config.update(test_config)
 
-    database     = create_engine(app.config['DB_URL'], encoding = 'utf-8', max_overflow = 0)
+    database     = create_engine(app.config['DB_URL'], encoding = 'utf-8', max_overflow = 0, pool_size=50)
     app.database = database
 
     @app.route("/ping", methods=['GET'])
@@ -352,8 +352,6 @@ def create_app(test_config = None):
         if request.method == 'POST':
             new_user = request.json
             
-            app.logger.info('Image Type : %s', type(new_user['body']['photo']['base64']))
-            return '', 200
             # app.logger.error('%s', type(new_user['id']))
             # new_user['photo'] = new_user['photo']['base64']
             # app.logger.info('%s', new_user['photo'])
@@ -413,7 +411,7 @@ def create_app(test_config = None):
 
         # When exist: 404, not exist: 200
         if is_duplicate:
-            return '', 404
+            return 'YOU HAVE DUPLICATE NICKNAME', 404
         else:
             return f'{is_duplicate}', 200
 
