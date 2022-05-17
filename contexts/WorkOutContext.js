@@ -24,6 +24,9 @@ function reducer(state, action) {
         paces: state.paces.concat(action.payload),
       };
     case 'UPDATE_RECORD':
+      console.log('update record');
+      console.log(action.payload);
+      console.log(state);
       return {
         ...state,
         distance: action.payload.distance,
@@ -42,8 +45,12 @@ export function WorkOutContextProvider({children}) {
   const {paces, locations} = state;
 
   const sendRecord = async () => {
-    const {distance, time, calories, paces} = state;
     try {
+      const token = await loginStorages.get();
+      console.log(token);
+      console.log(state);
+      const {distance, time, calories, paces} = state;
+      console.log(distance);
       const data = {
         distance: distance.toFixed(2),
         time,

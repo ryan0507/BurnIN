@@ -6,11 +6,14 @@ import WhiteBlock from '../../components/WhiteBlock';
 import loginStorages from '../../storages/loginStorages';
 import axios from 'axios';
 import {secondsToHm} from '../../modules/Calculations';
+import RecordGraph from '../../charts/RecordGraph';
+import TimeGraph from '../../charts/TimeGraph';
 
 function RaceScreen() {
   const [tab, setTab] = useState('ranking');
   const [ranking, setRanking] = useState([]);
   const [personalRecord, setPersonalRecord] = useState('');
+  const [dashboardRecord, setDashboardRecord] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -62,6 +65,33 @@ function RaceScreen() {
     }, []),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      let isFocused = true;
+      const getDashboardRecord = async () => {
+        try {
+          const token = await loginStorages.get();
+          const options = {
+            headers: {Authorization: `Token ${token}`},
+          };
+          const {data} = await axios.get(
+            'http://34.67.158.106:5000/u-ha',
+            options,
+          );
+          if (isFocused) {
+            setDashboardRecord(data);
+          }
+        } catch (e) {
+          throw new Error(e);
+        }
+      };
+      getDashboardRecord();
+      return () => {
+        isFocused = false;
+      };
+    }, []),
+  );
+
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
@@ -89,7 +119,7 @@ function RaceScreen() {
         {tab === 'ranking' ? (
           <Ranking ranking={ranking} personalRecord={personalRecord} />
         ) : (
-          <DashBoard />
+          <DashBoard data={dashboardRecord} />
         )}
       </View>
     </>
@@ -218,10 +248,12 @@ function Ranking({ranking, personalRecord}) {
   );
 }
 
-function DashBoard() {
+function DashBoard({data}) {
   return (
     <View>
       <Text>대시보드 보기</Text>
+      <RecordGraph data={data} />
+      <TimeGraph data={data} />
     </View>
   );
 }

@@ -39,7 +39,7 @@ export function SignUpContextProvider({children}) {
         form,
       );
     } catch (e) {
-      console.log(e);
+      throw new Error(e);
     }
   };
 
@@ -47,7 +47,7 @@ export function SignUpContextProvider({children}) {
     try {
       // send new user's information
       const res = await axios.post('http://34.67.158.106:5000/sign-up', form);
-
+      console.log(res);
       // save token at loginStorage
       const {access_token} = res.data;
       await loginStorages.set(access_token);

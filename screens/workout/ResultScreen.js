@@ -89,7 +89,7 @@ function ResultScreen({navigation, route}) {
                   navigation.navigate('MainTab', {screen: 'WorkOutScreen'});
                 });
               }}>
-              <Text>기록 저장</Text>
+              <Text style={styles.btnText}>기록 저장</Text>
             </Pressable>
           </View>
         </View>
@@ -163,5 +163,11 @@ const styles = StyleSheet.create({
   unitText: {
     fontSize: 12,
     fontWeight: '400',
+  },
+  btnText: {
+    fontWeight: '900',
+    color: '#EF9917',
+    textAlign: 'center',
+    marginTop: 12,
   },
 });

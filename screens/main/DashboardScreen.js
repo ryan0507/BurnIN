@@ -1,5 +1,6 @@
 /*eslint-disable*/
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -11,6 +12,8 @@ import {
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
 import userStorages from '../../storages/userStorages';
+import loginStorages from '../../storages/loginStorages';
+import axios from 'axios';
 
 function DashboardScreen() {
   const [nickname, setNickname] = useState('');
@@ -19,6 +22,33 @@ function DashboardScreen() {
       setNickname(userInfo.id);
     });
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isFocused = true;
+      const getDashboardRecord = async () => {
+        try {
+          const token = await loginStorages.get();
+          const options = {
+            headers: {Authorization: `Token ${token}`},
+          };
+          const {data} = await axios.get(
+            'http://34.67.158.106:5000/u-ha2',
+            options,
+          );
+          if (isFocused) {
+            console.log(data);
+          }
+        } catch (e) {
+          throw new Error(e);
+        }
+      };
+      getDashboardRecord();
+      return () => {
+        isFocused = false;
+      };
+    }, []),
+  );
 
   return (
     <>

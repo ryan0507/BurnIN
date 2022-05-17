@@ -53,7 +53,7 @@ function GetNickname({navigation}) {
         .then(() => {
           navigation.navigate('GetPassword');
         })
-        .catch(() => {
+        .catch(e => {
           // 닉네임 중복 O - 노티 메시지 띄우기
           setNoti(1);
           setTimeout(() => {

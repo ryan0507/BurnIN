@@ -34,12 +34,10 @@ export const calPace = (dist, time_seconds) => {
   }
   dist = parseFloat(dist);
   const time = secondsToHm(time_seconds);
-  const hrs = parseInt(time.substring(0, 2));
-  const mins = parseInt(time.substring(3, 5));
-  const secs = parseInt(time.substring(6, 8));
+  const mins = parseInt(time.substring(1, 3));
+  const secs = parseInt(time.substring(3, 5));
 
   var timeElapsed = 0;
-  timeElapsed += hrs * 60;
   timeElapsed += mins;
   timeElapsed += secs / 60;
   const pace = timeElapsed / dist;

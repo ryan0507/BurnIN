@@ -95,8 +95,9 @@ function RunningScreen({route}) {
   useEffect(() => {
     async function getWeight() {
       try {
-        userStorages.get().then(userInfo => {
-          weight.current = userInfo.weight;
+        await userStorages.get().then(userInfo => {
+          const data = JSON.parse(userInfo);
+          weight.current = data.weight;
         });
       } catch (e) {
         console.log(e);
@@ -112,8 +113,8 @@ function RunningScreen({route}) {
 
   useEffect(() => {
     return () => {
+      console.log('runningscreen unmounted');
       removeLocationUpdates();
-      dispatch({type: 'CLEAR_WORKOUT'});
     };
   }, []);
 
@@ -138,6 +139,7 @@ function RunningScreen({route}) {
 
   const quitRunning = () => {
     navigation.goBack();
+    dispatch({type: 'CLEAR_WORKOUT'});
   };
 
   const closeModal = () => {

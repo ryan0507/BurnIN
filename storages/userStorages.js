@@ -19,7 +19,6 @@ const userStorages = {
 
   async set(newInfo) {
     try {
-      console.log(newInfo);
       await AsyncStorage.setItem(key, JSON.stringify(newInfo));
     } catch (e) {
       throw new Error('Failed to set userInfo');
