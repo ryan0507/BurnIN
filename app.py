@@ -453,22 +453,22 @@ def create_app(test_config = None):
 
 
     @app.route('/u-ha', methods=['GET'])
-        def uha():
-            payload = request.headers
-            for key, item in payload.items():
-                app.logger.error('%s %s', key, item)
-            payload = payload['Authorization']
-            app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
-            user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
+    def uha():
+        payload = request.headers
+        for key, item in payload.items():
+            app.logger.error('%s %s', key, item)
+        payload = payload['Authorization']
+        app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
 
-            id = user['user_id']
-            json_data = {}
-            json_data.update(get_numUser_avg())
-            json_data.update(get_numUser_avg(id).json)
-            json_data.update(mypace_check(id))
-            json_data.update(graph_line().json)
-            json_data.update(graph_bar().json)
-            return json_data
+        id = user['user_id']
+        json_data = {}
+        json_data.update(get_numUser_avg())
+        json_data.update(get_numUser_avg(id).json)
+        json_data.update(mypace_check(id))
+        json_data.update(graph_line().json)
+        json_data.update(graph_bar().json)
+        return json_data
 #########################################################
 #       Decorators
 #########################################################
