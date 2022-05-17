@@ -360,6 +360,39 @@ def create_app(test_config = None):
         elif request.method == 'GET':
             return get_user(1)
 
+    @app.route('/u-ha', methods=['GET'])
+    def uha():
+        payload = request.headers
+        for key, item in payload.items():
+            app.logger.error('%s %s', key, item)
+        payload = payload['Authorization']
+        app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
+        for key, item in user.items():
+            app.logger.error('%s %s', key, item)
+        
+        id = user['user_id']
+        app.logger.error('%s',id)
+        json_data = {}
+        for key, item in json_data.items():
+            app.logger.error('%s %s', key, item)
+        
+        json_data.update(get_numUser_avg())
+        for key, item in json_data.items():
+            app.logger.error('%s %s', key, item)
+        json_data.update(mypace_check(id))
+        for key, item in json_data.items():
+            app.logger.error('%s %s', key, item)
+        json_data.update(graph_line().json)
+        for key, item in json_data.items():
+            app.logger.error('%s %s', key, item)
+
+        json_data.update(graph_bar().json)
+        for key, item in json_data.items():
+            app.logger.error('%s %s', key, item)
+
+        return jsonify(json_data)
+    
     @app.route("/nickname-check", methods = ['POST', 'GET'])
     def duplicate():
         cur_request = request.json
@@ -451,24 +484,6 @@ def create_app(test_config = None):
 
         return '', 200
 
-
-    @app.route('/u-ha', methods=['GET'])
-    def uha():
-        payload = request.headers
-        for key, item in payload.items():
-            app.logger.error('%s %s', key, item)
-        payload = payload['Authorization']
-        app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
-        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
-
-        id = user['user_id']
-        json_data = {}
-        json_data.update(get_numUser_avg())
-        json_data.update(get_numUser_avg(id).json)
-        json_data.update(mypace_check(id))
-        json_data.update(graph_line().json)
-        json_data.update(graph_bar().json)
-        return json_data
 #########################################################
 #       Decorators
 #########################################################
