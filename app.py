@@ -295,18 +295,22 @@ def recent_data(user_id):
                        })
     return jsonify([dict(d) for d in data][0])
 
-def get_user_id_and_password(email):
+def get_user_id_and_password_and_height_and_weight(email):
     row = current_app.database.execute(text("""    
         SELECT
             id,
-            passwd
+            passwd,
+            height,
+            weight
         FROM user
         WHERE id = :email
     """), {'email' : email}).fetchone()
 
     return {
         'id'     : row['id'],
-        'passwd' : row['passwd']
+        'passwd' : row['passwd'],
+        'height' : row['height'],
+        'weight' : row['weight']
     } if row else None
 
 def create_app(test_config = None):
@@ -433,20 +437,7 @@ def create_app(test_config = None):
         credential = request.json
         email = credential['id']
         password = credential['passwd']
-        user_credential = get_user_id_and_password(email)
-
-        # if user_credential and bcrypt.checkpw(password.encode('UTF-8'),
-        #                                       user_credential['hashed_password'].encode('UTF-8')):
-        #     user_id = user_credential['id']
-        #     payload = {
-        #         'user_id': user_id,
-        #         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
-        #     }
-        #     token = jwt.encode(payload, app.config['JWT_SECRET_KEY'], 'HS256')
-
-        #     return jsonify({
-        #         'access_token': token.decode('UTF-8')
-        #     })
+        user_credential = get_user_id_and_password_and_height_and_weight(email)
 
         if user_credential and password == user_credential['passwd']:
             payload = {
@@ -457,7 +448,9 @@ def create_app(test_config = None):
             token = jwt.encode(payload, app.config['JWT_SECRET_KEY'], 'HS256')
 
             return jsonify({
-                'access_token': token
+                'access_token': token,
+                'height' : user_credential['height'],
+                'weight' : user_credential['weight']
             })
 
         else:
