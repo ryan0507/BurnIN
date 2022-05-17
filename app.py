@@ -335,7 +335,13 @@ def create_app(test_config = None):
         #return mypace_check("유저3")
         #return graph_bar()
         #return user_data("유저1")
-        return recent_data("유저1")
+        #return recent_data("유저1")
+        json_data = {}
+        json_data['user_data'] = user_data('유저1').json
+        json_data['best_record'] = best_record('유저1')
+        json_data['recent_data'] = recent_data('유저1').json
+        #json_data.update()
+        return jsonify(json_data)
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
@@ -374,24 +380,26 @@ def create_app(test_config = None):
         id = user['user_id']
         app.logger.error('%s',id)
         json_data = {}
-        for key, item in json_data.items():
-            app.logger.error('%s %s', key, item)
-        
-        json_data.update(get_numUser_avg())
-        for key, item in json_data.items():
-            app.logger.error('%s %s', key, item)
-        json_data.update(mypace_check(id))
-        for key, item in json_data.items():
-            app.logger.error('%s %s', key, item)
-        json_data.update(graph_line().json)
-        for key, item in json_data.items():
-            app.logger.error('%s %s', key, item)
-
-        json_data.update(graph_bar().json)
-        for key, item in json_data.items():
-            app.logger.error('%s %s', key, item)
+        json_data['numUser_avg'] = get_numUser_avg()
+        json_data['mypace_check'] = mypace_check(id)
+        json_data['graph_line'] = graph_line().json
+        json_data['graph_bar'] = graph_bar().json
 
         return jsonify(json_data)
+
+    @app.route('/u-ha2', methods=['GET'])
+    def uha2():
+        payload = request.headers
+        payload = payload['Authorization']
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
+
+        id = user['user_id']
+        json_data = {}
+        json_data['user_data'] = user_data(id).json
+        json_data['best_record'] = best_record(id)
+        json_data['recent_data'] = recent_data(id).json
+        return jsonify(json_data)
+
     
     @app.route("/nickname-check", methods = ['POST', 'GET'])
     def duplicate():
