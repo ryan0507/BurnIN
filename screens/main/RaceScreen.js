@@ -17,7 +17,7 @@ function RaceScreen() {
       let isFocused = true;
       const getRaceRecord = async () => {
         try {
-          const token = loginStorages.get();
+          const token = await loginStorages.get();
 
           const options = {
             headers: {Authorization: `Token ${token}`},

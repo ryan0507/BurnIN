@@ -5,7 +5,6 @@ import LoginScreen from '../screens/login/LoginScreen';
 import SignUpStack from '../screens/signUp/SignUpStack';
 import MainTab from './MainTab';
 import RunStack from './RunStack';
-import ProfileStack from './ProfileStack';
 import {SignUpContextProvider} from '../contexts/SignUpContext';
 import {WorkOutContextProvider} from '../contexts/WorkOutContext';
 
@@ -51,11 +50,6 @@ function RootStack() {
           <Stack.Screen
             name="RunStack"
             component={RunStack}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="ProfileStack"
-            component={ProfileStack}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
