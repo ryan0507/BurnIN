@@ -378,7 +378,13 @@ def create_app(test_config = None):
 
     @app.route('/current-user-rank', methods=['GET'])
     def current_user_rank():
-        user = request.json
+        payload = request.headers
+        for key, item in payload.items():
+            app.logger.error('%s %s', key, item)
+        payload = payload['Authorization']
+        app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms = 'HS256')
+
         return get_current_user_rank(user['user_id'])
 
     @app.route('/login', methods=['POST'])
