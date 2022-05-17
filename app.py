@@ -280,6 +280,23 @@ def best_record(user_id):
     json_data['time_record'] = c['time_record']
     return json_data
 
+def recent_7(user_id):
+    data = current_app.database.execute(text("""
+        select created_at, pace, round(distance,2) as distance
+            from (
+            select 
+                created_at,
+                ifnull(time_record/distance, 0) as pace,
+              ifnull(distance,0) as distance
+            from runinfo
+            where user_id = :user_id
+            order by created_at desc
+            limit 7) as rn
+            order by created_at asc;
+                    """), {'user_id': user_id
+                           })
+    return jsonify([dict(d) for d in data][0])
+
 def recent_data(user_id):
     data = current_app.database.execute(text("""
             select 
@@ -344,8 +361,10 @@ def create_app(test_config = None):
         json_data['user_data'] = user_data('유저1').json
         json_data['best_record'] = best_record('유저1')
         json_data['recent_data'] = recent_data('유저1').json
+        json_data['recent_7'] = recent_7('유저1').json
         #json_data.update()
         return jsonify(json_data)
+        #return recent_7("유저1")
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
@@ -400,6 +419,7 @@ def create_app(test_config = None):
         json_data['user_data'] = user_data(id).json
         json_data['best_record'] = best_record(id)
         json_data['recent_data'] = recent_data(id).json
+        json_data['recent_7'] = recent_7(id).json
         return jsonify(json_data)
 
     
