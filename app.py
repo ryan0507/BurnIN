@@ -420,31 +420,36 @@ def create_app(test_config = None):
         user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
         for key, item in user.items():
             app.logger.error('%s %s', key, item)
-        
-        id = user['user_id']
-        app.logger.error('%s',id)
-        json_data = {}
-        json_data['numUser_avg'] = get_numUser_avg()
-        json_data['mypace_check'] = mypace_check(id)
-        json_data['graph_line'] = graph_line().json
-        json_data['graph_bar'] = graph_bar().json
-        json_data['get_rank'] = get_rank(id).json
 
-        return jsonify(json_data)
+        if run_info_check(user['user_id']) is None:
+            return "NO DATA YET", 404
+        else:
+            id = user['user_id']
+            app.logger.error('%s',id)
+            json_data = {}
+            json_data['numUser_avg'] = get_numUser_avg()
+            json_data['mypace_check'] = mypace_check(id)
+            json_data['graph_line'] = graph_line().json
+            json_data['graph_bar'] = graph_bar().json
+            json_data['get_rank'] = get_rank(id).json
+
+            return jsonify(json_data)
 
     @app.route('/u-ha2', methods=['GET'])
     def uha2():
         payload = request.headers
         payload = payload['Authorization']
         user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
-
-        id = user['user_id']
-        json_data = {}
-        json_data['user_data'] = user_data(id).json
-        json_data['best_record'] = best_record(id)
-        json_data['recent_data'] = recent_data(id).json
-        json_data['recent_7'] = recent_7(id).json
-        return jsonify(json_data)
+        if run_info_check(user['user_id']) is None:
+            return "NO DATA YET", 404
+        else:
+            id = user['user_id']
+            json_data = {}
+            json_data['user_data'] = user_data(id).json
+            json_data['best_record'] = best_record(id)
+            json_data['recent_data'] = recent_data(id).json
+            json_data['recent_7'] = recent_7(id).json
+            return jsonify(json_data)
 
 
 
