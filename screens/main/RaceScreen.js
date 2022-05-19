@@ -21,6 +21,9 @@ function RaceScreen() {
   const [ranking, setRanking] = useState([]);
   const [personalRecord, setPersonalRecord] = useState('');
   const [dashboardRecord, setDashboardRecord] = useState('');
+  const [showRanking, setShowRanking] = useState(false);
+  const [showPersonal, setShowPersonal] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -38,6 +41,7 @@ function RaceScreen() {
           );
           if (isFocused) {
             setPersonalRecord(res.data);
+            setShowPersonal(true);
           }
         } catch (e) {
           throw new Error(e);
@@ -59,6 +63,7 @@ function RaceScreen() {
           const res = await axios.get('http://34.67.158.106:5000/race-ranking');
           if (isFocused) {
             setRanking(res.data);
+            setShowRanking(true);
           }
         } catch (e) {
           throw new Error(e);
@@ -87,6 +92,7 @@ function RaceScreen() {
           );
           if (isFocused) {
             setDashboardRecord(data);
+            setShowDashboard(true);
           }
         } catch (e) {
           throw new Error(e);
@@ -123,11 +129,12 @@ function RaceScreen() {
             title="dashboard"
           />
         </View>
-        {tab === 'ranking' ? (
-          <Ranking ranking={ranking} personalRecord={personalRecord} />
-        ) : (
-          <DashBoard data={dashboardRecord} />
-        )}
+        {tab === 'ranking'
+          ? showRanking &&
+            showPersonal && (
+              <Ranking ranking={ranking} personalRecord={personalRecord} />
+            )
+          : showDashboard && <DashBoard data={dashboardRecord} />}
       </ScrollView>
     </>
   );
