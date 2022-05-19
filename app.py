@@ -209,7 +209,7 @@ def graph_line():
             order by created_at
 
     """))
-    return jsonify([dict(g) for g in graph][0])
+    return jsonify([dict(g) for g in graph])
 
 
 def graph_bar():
@@ -226,7 +226,7 @@ def graph_bar():
         group by hour
         order by hour asc
     """))
-    return jsonify([dict(g) for g in graph][0])
+    return jsonify([dict(g) for g in graph])
 
 def user_data(user_id):
     data = current_app.database.execute(text("""
@@ -290,20 +290,21 @@ def best_record(user_id):
 
 def recent_7(user_id):
     data = current_app.database.execute(text("""
-        select created_at, pace, round(distance,2) as distance
+        select created_at, avg(pace) as pace, sum(round(distance,2)) as distance
             from (
             select 
                 created_at,
                 ifnull(time_record/distance, 0) as pace,
-              ifnull(distance,0) as distance
+                ifnull(distance,0) as distance
             from runinfo
             where user_id = :user_id
             order by created_at desc
             limit 7) as rn
+            group by  created_at
             order by created_at asc;
                     """), {'user_id': user_id
                            })
-    return jsonify([dict(d) for d in data][0])
+    return jsonify([dict(d) for d in data])
 
 def recent_data(user_id):
     data = current_app.database.execute(text("""
