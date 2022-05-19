@@ -460,6 +460,36 @@ def create_app(test_config = None):
 
         return get_current_user_rank(user['user_id'])
 
+    @app.route('/race-finish', methods=['POST'])
+    def post_info():
+        payload = request.headers
+        payload = payload['Authorization']
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
+
+        user_id = user['user_id']
+
+        run_info = request.json
+        time_record = run_info['time']
+        pace_1 = run_info['pace_1']
+        pace_2 = run_info['pace_2']
+        pace_3 = run_info['pace_3']
+        distance = run_info['distance']
+        calories = run_info['calories']
+
+        record = {
+            'user_id': user_id,
+            'time_record': time_record,
+            'pace_1': pace_1,
+            'pace_2': pace_2,
+            'pace_3': pace_3,
+            'distance': distance,
+            'calories': calories
+        }
+
+        insert_run_data(record)
+
+        return '', 200
+
     @app.route('/login', methods=['POST'])
     def login():
         credential = request.json
@@ -487,35 +517,7 @@ def create_app(test_config = None):
     return app
 
 
-    @app.route('/race-finish', methods=['POST'])
-    def post_info():
-        payload = request.headers
-        payload = payload['Authorization']
-        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
 
-        user_id = user['user_id']
-
-        run_info = request.json
-        time_record = run_info['time']
-        pace_1 = run_info['pace_1']
-        pace_2 = run_info['pace_2']
-        pace_3 = run_info['pace_3']
-        distance = run_info['distance']
-        calories = run_info['calories']
-        
-        record = {
-            'user_id': user_id,
-            'time_record': time_record,
-            'pace_1':pace_1,
-            'pace_2': pace_2,
-            'pace_3': pace_3,
-            'distance' : distance,
-            'calories' : calories
-        }
-
-        insert_run_data(record)
-
-        return '', 200
 
 #########################################################
 #       Decorators
