@@ -75,6 +75,20 @@ def get_user(user_id):
         'weight': user['weight']
     } if user else None
 
+def run_info_check(user_id):
+    user = current_app.database.execute(text("""
+            SELECT
+                time_record
+            FROM runinfo
+            WHERE user_id = :user_id   
+        """), {
+        'user_id': user_id
+    }).fetchone()
+
+    return {
+        'time_record': user['time_record']
+    } if user else None
+
 def get_current_user_rank(user_id):
     current_user = current_app.database.execute(text("""
         select 
@@ -432,7 +446,8 @@ def create_app(test_config = None):
         json_data['recent_7'] = recent_7(id).json
         return jsonify(json_data)
 
-    
+
+
     @app.route("/nickname-check", methods = ['POST', 'GET'])
     def duplicate():
         cur_request = request.json
@@ -457,8 +472,10 @@ def create_app(test_config = None):
         payload = payload['Authorization']
         app.logger.error('%s', payload[6:].lstrip('"').rstrip('"'))
         user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms = 'HS256')
-
-        return get_current_user_rank(user['user_id'])
+        if run_info_check(user['user_id']) is None:
+            return "NO DATA YET", 404
+        else:
+            return get_current_user_rank(user['user_id'])
 
     @app.route('/race-finish', methods=['POST'])
     def post_info():
