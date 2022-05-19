@@ -45,11 +45,17 @@ export const calPace = (dist, time_seconds) => {
 };
 
 export const secondsToHm = seconds => {
-  console.log(seconds);
   var minutes = Math.floor((seconds % 3600) / 60);
   var second = Math.floor((seconds % 3600) % 60);
 
   return ('0' + minutes).slice(-2) + ':' + ('0' + second).slice(-2);
+};
+
+export const secondsToPace = seconds => {
+  var minutes = Math.floor((seconds % 3600) / 60);
+  var second = Math.floor((seconds % 3600) % 60);
+  const pace = minutes + "'" + second + '"';
+  return pace;
 };
 
 export const pacePresentation = pace => {

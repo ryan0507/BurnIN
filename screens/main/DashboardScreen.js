@@ -20,6 +20,7 @@ import {pacePresentation, secondsToHm} from '../../modules/Calculations';
 function DashboardScreen() {
   const [nickname, setNickname] = useState('');
   const [data, setData] = useState();
+  const [noData, setNoData] = useState(false);
   const [showChild, setShowChild] = useState(false);
   useEffect(() => {
     const getNickname = async () => {
@@ -45,9 +46,11 @@ function DashboardScreen() {
           );
           if (isFocused) {
             setData(data);
+            setNoData(false);
             setShowChild(true);
           }
         } catch (e) {
+          setNoData(true);
           throw new Error(e);
         }
       };
@@ -61,19 +64,35 @@ function DashboardScreen() {
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
-      {showChild && (
-        <ScrollView style={styles.block}>
-          <OrangeBlock>
-            <Profile nickname={nickname} />
-            <WhiteBlock>
-              <ProgessRecord data={data.user_data} />
-            </WhiteBlock>
-          </OrangeBlock>
-          <TotalRecord data={data.user_data} />
-          <WeeklyRecord data={data} />
-          <HighestRecord data={data.best_record} />
-          <RecentRecord data={data.recent_data} />
-        </ScrollView>
+      {noData ? (
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            justifyContent: 'center',
+          }}>
+          <Text style={{textAlign: 'center', fontSize: 12, color: '#000000'}}>
+            아직 기록이 존재하지 않습니다.
+          </Text>
+          <Text style={{textAlign: 'center', fontSize: 12, color: '#000000'}}>
+            레이스에 참여해 보세요!
+          </Text>
+        </View>
+      ) : (
+        showChild && (
+          <ScrollView style={styles.block}>
+            <OrangeBlock>
+              <Profile nickname={nickname} />
+              <WhiteBlock>
+                <ProgessRecord data={data.user_data} />
+              </WhiteBlock>
+            </OrangeBlock>
+            <TotalRecord data={data.user_data} />
+            <WeeklyRecord data={data} />
+            <HighestRecord data={data.best_record} />
+            <RecentRecord data={data.recent_data} />
+          </ScrollView>
+        )
       )}
     </>
   );

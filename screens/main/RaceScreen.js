@@ -12,7 +12,7 @@ import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
 import loginStorages from '../../storages/loginStorages';
 import axios from 'axios';
-import {secondsToHm} from '../../modules/Calculations';
+import {secondsToHm, secondsToPace} from '../../modules/Calculations';
 import RecordGraph from '../../charts/RecordGraph';
 import TimeGraph from '../../charts/TimeGraph';
 
@@ -24,6 +24,7 @@ function RaceScreen() {
   const [showRanking, setShowRanking] = useState(false);
   const [showPersonal, setShowPersonal] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [noData, setNoData] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -42,8 +43,10 @@ function RaceScreen() {
           if (isFocused) {
             setPersonalRecord(res.data);
             setShowPersonal(true);
+            setNoData(false);
           }
         } catch (e) {
+          setNoData(true);
           throw new Error(e);
         }
       };
@@ -64,8 +67,10 @@ function RaceScreen() {
           if (isFocused) {
             setRanking(res.data);
             setShowRanking(true);
+            setNoData(false);
           }
         } catch (e) {
+          setNoData(true);
           throw new Error(e);
         }
       };
@@ -92,9 +97,11 @@ function RaceScreen() {
           );
           if (isFocused) {
             setDashboardRecord(data);
+            setNoData(false);
             setShowDashboard(true);
           }
         } catch (e) {
+          setNoData(true);
           throw new Error(e);
         }
       };
@@ -129,12 +136,25 @@ function RaceScreen() {
             title="dashboard"
           />
         </View>
-        {tab === 'ranking'
-          ? showRanking &&
-            showPersonal && (
-              <Ranking ranking={ranking} personalRecord={personalRecord} />
-            )
-          : showDashboard && <DashBoard data={dashboardRecord} />}
+        {noData ? (
+          <View style={{flex: 1, paddingHorizontal: 24, marginTop: 20}}>
+            <Text style={{textAlign: 'center', fontSize: 12, color: '#000000'}}>
+              아직 기록이 존재하지 않습니다.
+            </Text>
+            <Text style={{textAlign: 'center', fontSize: 12, color: '#000000'}}>
+              레이스에 참여해 보세요!
+            </Text>
+          </View>
+        ) : (
+          <View>
+            {tab === 'ranking'
+              ? showRanking &&
+                showPersonal && (
+                  <Ranking ranking={ranking} personalRecord={personalRecord} />
+                )
+              : showDashboard && <DashBoard data={dashboardRecord} />}
+          </View>
+        )}
       </ScrollView>
     </>
   );
@@ -286,6 +306,12 @@ function DashBoard({data}) {
     const paces = Object.values(mypace_check);
     paces.map((item, i) => {
       // diff값이 양수일 경우와 음수일 경우 구분해서 UI 제작
+      console.log(item);
+      return (
+        <View key={i}>
+          <Text>{secondsToPace(item)}</Text>
+        </View>
+      );
     });
   }, [data]);
   return (
@@ -320,9 +346,12 @@ function DashBoard({data}) {
           paddingHorizontal: 24,
         }}>
         <Text style={{fontWeight: '600', fontSize: 15, color: '#323232'}}>
-          DA짱님의 위치: 12등
+          {data.get_rank.user_id}님의 위치: {data.get_rank.race_rank}등
         </Text>
-        <Text style={styles.greyText}>30초 더 빨리 달릴 경우 1rank up!</Text>
+        <Text style={styles.greyText}>
+          {data.get_rank.diff}초 더 빨리 달릴 경우 {data.get_rank.rank_up}rank
+          up!
+        </Text>
       </View>
       <View
         style={{
@@ -352,7 +381,7 @@ function DashBoard({data}) {
         <View style={{flex: 1}}>
           <Text style={styles.text}>구간별 페이스</Text>
           <View style={{flexDirection: 'row', marginTop: 8}}>
-            <Text>10초 1초 5초</Text>
+            <Text>{generatePaces()}</Text>
           </View>
         </View>
       </View>
