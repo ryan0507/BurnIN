@@ -1,57 +1,18 @@
 import React from 'react';
 import {View, Text, Dimensions, StyleSheet} from 'react-native';
-import {
-  LineChart,
-  BarChart
-} from "react-native-chart-kit";
 
 function WeeklyGraph({data}) {
-  console.log(data);
-  const records = [];
-  const generateRecords = () => {
-    data.recent_7.map(item => {
-      records.push(item.created_at);
-    });
-  };
-  generateRecords();
-
-  const day = [];
-  const generateDays = () => {
-    records.map(item => {
-      day.push(item.split(' ', 2));
-    });
-  };
-  generateDays();
-
-  console.log(data);
-  const records2 = [];
-  const generateRecords2 = () => {
-    data.recent_7.map(item => {
-      records2.push(item.distance);
-    });
-  };
-  generateRecords2();
-
-  console.log(data);
-  const records3 = [];
-  const generateRecords3 = () => {
-    data.recent_7.map(item => {
-      records3.push(item.pace);
-    });
-  };
-  generateRecords3();
-
   return (
-    <View style={{height: 120, backgroundColor: 'white'}}>
+    <View style={{height: 120, backgroundColor: 'lavender'}}>
       <Text>주간 그래프</Text>
       <View title="bar plus line">
       <BarChart // 개인 분석에 들어갈 line + bar chart
           data={{
-          labels: day,
-          datasets: [{data: records2}]
+          labels: ["월", "화", "수", "목", "금", "토", "일"],
+          datasets: [{data: [84,20,40,30,10, 20,10,]}]
           }}
-          width={Dimensions.get("window").width - 60} // from react-native
-          height={160}
+          width={Dimensions.get("window").width - 30} // from react-native
+          height={220}
           yAxisLabel={""}
           withInnerLines={true}
           withOuterLines={true}
@@ -78,18 +39,20 @@ function WeeklyGraph({data}) {
           style={{
           marginVertical: 8,
           borderRadius: 16,
-          paddingRight: 18,
+          paddingRight:50,
           }}
       />          
     </View>
     <View style={{position: 'absolute', top:192, left:42}}>
     <LineChart 
           data={{
-          labels: [],
-          datasets: [{data: records3}]
+          labels: ["월", "화", "수", "목", "금", "토", "일"],
+          datasets: [
+              {data: [84,20,40,30,10,20,40,]}
+          ]
           }}
-          width={Dimensions.get("window").width - 60} // from react-native
-          height={180}
+          width={Dimensions.get("window").width - 50} // from react-native
+          height={220}
           yAxisLabel={""}
           fromZero={true} // 세로 축 시작 0부터, default : minimum data
           withInnerLines={false} // 격자 없애기
@@ -125,8 +88,8 @@ function WeeklyGraph({data}) {
           style={{
           marginVertical: 8,
           borderRadius: 16,
-          paddingRight: 20,
-          position:'absolute', left:-10,top:-160
+          paddingRight:30,
+          position:'absolute', left:10,top:100
           }}
       /></View>
     </View>

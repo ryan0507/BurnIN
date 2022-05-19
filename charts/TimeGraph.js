@@ -7,29 +7,13 @@ import {
 
 function TimeGraph({data}) {
   console.log(data);
-  const records = [];
-  const generateRecords = () => {
-    data.graph_bar.map(item => {
-      records.push(item.hour);
-    });
-  };
-  generateRecords();
-
-  const records2 = [];
-  const generateRecords2 = () => {
-    data.graph_bar.map(item => {
-      records2.push(item.cnt);
-    });
-  };
-  generateRecords();
-
   return (
     <View style={{height: 120, backgroundColor: 'white'}}>
       <Text>타임 그래프</Text>
       <BarChart //bar chart
           data={{
-          labels: records,
-          datasets: [{data: records2}]
+          labels: ["0시", "1시", "2시", "3시", "4시", "5시", "6시","7시","8시","9시","10시","11시","12시","13시","14시","15시","16시","17시","18시","19시","20시","21시","22시","23시","24시"],
+          datasets: [{data: [84, 20, 40,30,10, 20,10,0,1,2,5,7,84, 20, 40,30,10, 20,10,0,1,2,5,7]}]
           }}
           width={Dimensions.get("window").width - 45} // from react-native
           height={90}
