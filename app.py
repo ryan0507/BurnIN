@@ -38,27 +38,21 @@ def insert_user(user):
 def insert_run_data(record):
     return current_app.database.execute(text("""
         INSERT INTO runinfo (
-             id,
              user_id,
-             created_at,
              time_record,
              pace_1,
              pace_2,
              pace_3,
              distance,
-             calories,
-             marker-map  
+             calories
         ) VALUES (
-            :id,
             :user_id,
-            :created_at,
+            :time_record,
             :pace_1,
             :pace_2,
             :pace_3,
-            :time_record,
-            :distance
-            :calories,
-            :marker-map 
+            :distance,
+            :calories
         )
     """), record)
 
@@ -357,14 +351,29 @@ def create_app(test_config = None):
         #return graph_bar()
         #return user_data("유저1")
         #return recent_data("유저1")
+        """
         json_data = {}
         json_data['user_data'] = user_data('유저1').json
         json_data['best_record'] = best_record('유저1')
         json_data['recent_data'] = recent_data('유저1').json
         json_data['recent_7'] = recent_7('유저1').json
-        #json_data.update()
+        json_data['get_rank'] = get_rank('유저1').json
+
         return jsonify(json_data)
-        #return recent_7("유저1")
+        """
+
+        record = {
+            'user_id': "test1",
+            'time_record': 1000,
+            'pace_1': 350,
+            'pace_2': 400,
+            'pace_3': 370,
+            'distance': 490.0,
+            'calories': 366
+        }
+
+        insert_run_data(record)
+        return "",200
 
     @app.route("/sign-up", methods=['POST', 'GET'])
     def sign_up():
@@ -405,6 +414,7 @@ def create_app(test_config = None):
         json_data['mypace_check'] = mypace_check(id)
         json_data['graph_line'] = graph_line().json
         json_data['graph_bar'] = graph_bar().json
+        json_data['get_rank'] = get_rank(id).json
 
         return jsonify(json_data)
 
@@ -479,24 +489,28 @@ def create_app(test_config = None):
 
     @app.route('/race-finish', methods=['POST'])
     def post_info():
-        user_id = request.headers.get('user_id')
-        user = get_user(user_id)
+        payload = request.headers
+        payload = payload['Authorization']
+        user = jwt.decode(payload[6:].lstrip('"').rstrip('"'), app.config['JWT_SECRET_KEY'], algorithms='HS256')
 
-        # TODO: Should be modified with changed DB structure        
-        cur_id = user['id']
-        user_id = user['nickname']
-        info = request.json
-        dist = info['distance']
-        time = info['time']
-        calories = info['calories']
-        paces = info['paces']
+        user_id = user['user_id']
+
+        run_info = request.json
+        time_record = run_info['time']
+        pace_1 = run_info['pace_1']
+        pace_2 = run_info['pace_2']
+        pace_3 = run_info['pace_3']
+        distance = run_info['distance']
+        calories = run_info['calories']
         
         record = {
-            'id': cur_id,
             'user_id': user_id,
-            'created_at' : datetime.datetime.now().timestamp,
-            'time_record' : time,
-            'distance' : dist
+            'time_record': time_record,
+            'pace_1':pace_1,
+            'pace_2': pace_2,
+            'pace_3': pace_3,
+            'distance' : distance,
+            'calories' : calories
         }
 
         insert_run_data(record)
