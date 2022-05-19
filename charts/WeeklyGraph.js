@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, Dimensions, StyleSheet} from 'react-native';
+import {  LineChart,  BarChart} from "react-native-chart-kit";
 
 function WeeklyGraph({data}) {
   return (
