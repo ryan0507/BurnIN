@@ -7,13 +7,21 @@ import {
 
 function RecordGraph({data}) {
   console.log(data);
+  const records = [];
+  const generateRecords = () => {
+    data.graph_line.map(item => {
+      records.push(item.pace_3);
+    });
+  };
+  generateRecords();
+
   return (
     <View style={{height: 120, backgroundColor: 'white'}}>
       <Text>레코드 그래프</Text>
       <LineChart // 레이스 대시보드에 넣을 그래프!
           data={{
           labels: [],
-          datasets: [{data: [45,6, 10, 3, 40, 22, 0]}]
+          datasets: [{data: records}]
           }}
           width={Dimensions.get("window").width - 45} // from react-native
           height={90}
@@ -58,4 +66,3 @@ function RecordGraph({data}) {
 }
 
 export default RecordGraph;
-
