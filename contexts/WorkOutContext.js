@@ -47,10 +47,7 @@ export function WorkOutContextProvider({children}) {
   const sendRecord = async () => {
     try {
       const token = await loginStorages.get();
-      console.log(token);
-      console.log(state);
       const {distance, time, calories, paces} = state;
-      console.log(distance);
       const data = {
         distance: distance.toFixed(2),
         time,

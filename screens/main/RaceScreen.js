@@ -1,5 +1,12 @@
 import React, {useState, useContext, useCallback} from 'react';
-import {View, Text, StyleSheet, StatusBar, Pressable} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Pressable,
+} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
@@ -95,14 +102,14 @@ function RaceScreen() {
   return (
     <>
       <StatusBar backgroundColor="#F4BC68" />
-      <View style={styles.block}>
+      <ScrollView style={styles.block}>
         <OrangeBlock>
           <Text style={styles.title}>레이스</Text>
           <WhiteBlock>
             <Text style={styles.text}>3km 언택트 레이스 개최!</Text>
             <View style={{alignItems: 'center'}}>
-              <Text style={[styles.text, styles.small]}>날씨가 좋은 5월!</Text>
-              <Text style={[styles.text, styles.small]}>
+              <Text style={[styles.small]}>날씨가 좋은 5월!</Text>
+              <Text style={[styles.small]}>
                 3km를 누구보다 빠르게 뛰어보세요!
               </Text>
             </View>
@@ -121,7 +128,7 @@ function RaceScreen() {
         ) : (
           <DashBoard data={dashboardRecord} />
         )}
-      </View>
+      </ScrollView>
     </>
   );
 }
@@ -140,16 +147,23 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#000000',
+    textAlign: 'center',
+  },
+  greyText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#32323283',
   },
   small: {
     fontSize: 12,
+    fontWeight: '500',
   },
   tabBtnBlock: {
     flexDirection: 'row',
     marginTop: 72,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
   },
   tabBtn: {
     marginRight: 18,
@@ -207,6 +221,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000',
   },
+  circularRecord: {
+    width: 110,
+    height: 110,
+    borderRadius: 110,
+    borderWidth: 10,
+    borderColor: '#cfd8dc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 function Ranking({ranking, personalRecord}) {
@@ -249,9 +272,83 @@ function Ranking({ranking, personalRecord}) {
 }
 
 function DashBoard({data}) {
+  console.log(data);
+
+  const generatePaces = useCallback(() => {
+    const {mypace_check} = data;
+    const paces = Object.values(mypace_check);
+    paces.map((item, i) => {
+      // diff값이 양수일 경우와 음수일 경우 구분해서 UI 제작
+    });
+  }, [data]);
   return (
     <View>
-      <Text>대시보드 보기</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingHorizontal: 50,
+          justifyContent: 'space-between',
+          marginBottom: 40,
+        }}>
+        <View style={styles.circularRecord}>
+          <Text style={{fontWeight: '700', fontSize: 30, color: '#000000'}}>
+            {data.numUser_avg.participant}명
+          </Text>
+          <Text style={{fontWeight: '700', fontSize: 12, color: '#000000'}}>
+            참여자수
+          </Text>
+        </View>
+        <View style={styles.circularRecord}>
+          <Text style={{fontWeight: '700', fontSize: 30, color: '#000000'}}>
+            {secondsToHm(data.numUser_avg.average)}
+          </Text>
+          <Text style={{fontWeight: '700', fontSize: 12, color: '#000000'}}>
+            평균 기록
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          marginBottom: 40,
+          paddingHorizontal: 24,
+        }}>
+        <Text style={{fontWeight: '600', fontSize: 15, color: '#323232'}}>
+          DA짱님의 위치: 12등
+        </Text>
+        <Text style={styles.greyText}>30초 더 빨리 달릴 경우 1rank up!</Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: '#f0f0f0',
+          borderRadius: 15,
+          marginHorizontal: 24,
+          flexDirection: 'row',
+          paddingVertical: 12,
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          marginBottom: 40,
+        }}>
+        <View style={{flex: 1}}>
+          <Text style={styles.text}>총 기록</Text>
+          <View style={{flexDirection: 'row', marginTop: 8}}>
+            <Text style={styles.greyText}>이전 기록 대비 </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '600',
+                color: 'rgba(255, 0, 0, 0.61)',
+              }}>
+              14초 단축
+            </Text>
+          </View>
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.text}>구간별 페이스</Text>
+          <View style={{flexDirection: 'row', marginTop: 8}}>
+            <Text>10초 1초 5초</Text>
+          </View>
+        </View>
+      </View>
       <RecordGraph data={data} />
       <TimeGraph data={data} />
     </View>

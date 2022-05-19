@@ -45,6 +45,7 @@ export const calPace = (dist, time_seconds) => {
 };
 
 export const secondsToHm = seconds => {
+  console.log(seconds);
   var minutes = Math.floor((seconds % 3600) / 60);
   var second = Math.floor((seconds % 3600) % 60);
 
