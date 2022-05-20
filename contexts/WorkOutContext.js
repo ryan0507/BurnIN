@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, {createContext, useReducer, useEffect} from 'react';
+import React, {createContext, useReducer} from 'react';
 import axios from 'axios';
 import loginStorages from '../storages/loginStorages';
 
@@ -24,9 +24,6 @@ function reducer(state, action) {
         paces: state.paces.concat(action.payload),
       };
     case 'UPDATE_RECORD':
-      console.log('update record');
-      console.log(action.payload);
-      console.log(state);
       return {
         ...state,
         distance: action.payload.distance,
@@ -47,15 +44,14 @@ export function WorkOutContextProvider({children}) {
   const sendRecord = async () => {
     try {
       const token = await loginStorages.get();
-      console.log(token);
       const {distance, time, calories, paces} = state;
       const data = {
         distance: distance.toFixed(2),
         time,
         calories,
-        pace_1: paces[0],
-        pace_2: paces[1],
-        pace_3: paces[2],
+        pace_1: paces[0] || 0,
+        pace_2: paces[1] || 0,
+        pace_3: paces[2] || 0,
       };
       console.log(data);
       const options = {
@@ -72,14 +68,6 @@ export function WorkOutContextProvider({children}) {
     }
   };
 
-  const getAnalyticsRecord = async () => {
-    try {
-      const res = await axios.get('url');
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   return (
     <WorkOutContext.Provider
       value={{
@@ -87,7 +75,6 @@ export function WorkOutContextProvider({children}) {
         paces,
         locations,
         sendRecord,
-        getAnalyticsRecord,
       }}>
       {children}
     </WorkOutContext.Provider>

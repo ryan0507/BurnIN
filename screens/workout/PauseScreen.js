@@ -1,5 +1,5 @@
-import React, {useEffect, useCallback, useRef, useContext} from 'react';
-import {View, Text, StyleSheet, StatusBar, BackHandler} from 'react-native';
+import React, {useContext} from 'react';
+import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import CircularBtn from '../../components/CircularBtn';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WorkOutContext from '../../contexts/WorkOutContext';

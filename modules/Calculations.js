@@ -51,6 +51,19 @@ export const secondsToHm = seconds => {
   return ('0' + minutes).slice(-2) + ':' + ('0' + second).slice(-2);
 };
 
+export const secondsToHourMinute = seconds => {
+  const hour = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const second = Math.floor((seconds % 3600) % 60);
+  return (
+    ('0' + hour).slice(-2) +
+    ':' +
+    ('0' + minutes).slice(-2) +
+    ':' +
+    ('0' + second).slice(-2)
+  );
+};
+
 export const secondsToPace = seconds => {
   var minutes = Math.floor((seconds % 3600) / 60);
   var second = Math.floor((seconds % 3600) % 60);

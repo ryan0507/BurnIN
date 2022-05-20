@@ -43,6 +43,14 @@ function WorkOutScreen() {
       getLocation();
     };
   }, []);
+  useEffect(() => {
+    navigation.addListener('focus', e => {
+      getLocation();
+    });
+    navigation.addListener('blur', e => {
+      getLocation();
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.block}>

@@ -1,4 +1,4 @@
-import React, {useState, useContext, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   ScrollView,
@@ -14,6 +14,7 @@ import loginStorages from '../../storages/loginStorages';
 import axios from 'axios';
 import {secondsToHm, secondsToPace} from '../../modules/Calculations';
 import RecordGraph from '../../charts/RecordGraph';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import TimeGraph from '../../charts/TimeGraph';
 
 function RaceScreen() {
@@ -25,7 +26,6 @@ function RaceScreen() {
   const [showPersonal, setShowPersonal] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [noData, setNoData] = useState(false);
-
   useFocusEffect(
     useCallback(() => {
       let isFocused = true;
@@ -67,7 +67,6 @@ function RaceScreen() {
           if (isFocused) {
             setRanking(res.data);
             setShowRanking(true);
-            setNoData(false);
           }
         } catch (e) {
           setNoData(true);
@@ -299,19 +298,37 @@ function Ranking({ranking, personalRecord}) {
 }
 
 function DashBoard({data}) {
-  console.log(data);
-
   const generatePaces = useCallback(() => {
     const {mypace_check} = data;
     const paces = Object.values(mypace_check);
-    paces.map((item, i) => {
+    return paces.map((item, i) => {
       // diff값이 양수일 경우와 음수일 경우 구분해서 UI 제작
-      console.log(item);
-      return (
-        <View key={i}>
-          <Text>{secondsToPace(item)}</Text>
-        </View>
-      );
+      if (i > 0) {
+        let pace = item;
+        if (item < 0) {
+          pace = -item;
+        }
+        return (
+          <View
+            key={i}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text>{secondsToPace(pace)}</Text>
+            {item > 0 ? (
+              <Icon name="arrow-drop-up" color="#78B2F8" size={12} />
+            ) : (
+              <Icon
+                name="arrow-drop-down"
+                color="rgba(255, 0, 0, 0.61)"
+                size={12}
+              />
+            )}
+          </View>
+        );
+      }
     });
   }, [data]);
   return (
@@ -374,14 +391,19 @@ function DashBoard({data}) {
                 fontWeight: '600',
                 color: 'rgba(255, 0, 0, 0.61)',
               }}>
-              14초 단축
+              {`${data.get_rank.diff}초 단축`}
             </Text>
           </View>
         </View>
         <View style={{flex: 1}}>
           <Text style={styles.text}>구간별 페이스</Text>
-          <View style={{flexDirection: 'row', marginTop: 8}}>
-            <Text>{generatePaces()}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 8,
+              justifyContent: 'space-between',
+            }}>
+            {generatePaces()}
           </View>
         </View>
       </View>

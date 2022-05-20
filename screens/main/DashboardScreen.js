@@ -1,21 +1,19 @@
 /*eslint-disable*/
 import React, {useEffect, useState, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
-import {
-  View,
-  Text,
-  StatusBar,
-  Image,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import {View, Text, StatusBar, StyleSheet, ScrollView} from 'react-native';
 import OrangeBlock from '../../components/OrangeBlock';
 import WhiteBlock from '../../components/WhiteBlock';
 import userStorages from '../../storages/userStorages';
 import loginStorages from '../../storages/loginStorages';
 import axios from 'axios';
 import WeeklyGraph from '../../charts/WeeklyGraph';
-import {pacePresentation, secondsToHm} from '../../modules/Calculations';
+import {
+  pacePresentation,
+  secondsToHm,
+  secondsToHourMinute,
+} from '../../modules/Calculations';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 function DashboardScreen() {
   const [nickname, setNickname] = useState('');
@@ -25,7 +23,7 @@ function DashboardScreen() {
   useEffect(() => {
     const getNickname = async () => {
       await userStorages.get().then(userInfo => {
-        setNickname(userInfo.id);
+        setNickname(JSON.parse(userInfo).id);
       });
     };
     getNickname();
@@ -158,7 +156,14 @@ const styles = StyleSheet.create({
 function Profile({nickname}) {
   return (
     <View style={styles.profileBlock}>
-      <Text style={{fontSize: 15, fontWeight: '700', color: '#ffffff'}}>
+      <Icon name="person" size={20} color="#ffffff" />
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: '700',
+          color: '#ffffff',
+          marginLeft: 10,
+        }}>
         {nickname}
       </Text>
     </View>
@@ -188,9 +193,9 @@ function ProgessRecord({data}) {
             alignItems: 'center',
           }}>
           <Text style={styles.bold}>{totalDist} km</Text>
-          <Text style={styles.small}>{`다음 목표까지 ${
-            10 - totalDist
-          }km`}</Text>
+          <Text style={styles.small}>{`다음 목표까지 ${(10 - totalDist).toFixed(
+            2,
+          )}km`}</Text>
         </View>
         <Progressbar totalDist={totalDist} />
       </View>
@@ -224,7 +229,6 @@ function Progressbar({totalDist}) {
   );
 }
 function TotalRecord({data}) {
-  const dist = data.all_distance;
   const time = data.all_time;
   const pace = secondsToHm(data.all_time);
   const cnt = data.count_running;
@@ -232,7 +236,7 @@ function TotalRecord({data}) {
     <View style={styles.totalBlock}>
       <View>
         <Text style={styles.bold}>총 러닝 시간</Text>
-        <Text style={styles.small}>{time}</Text>
+        <Text style={styles.small}>{secondsToHourMinute(time)}</Text>
       </View>
       <View>
         <Text style={styles.bold}>총 러닝 횟수</Text>
@@ -288,7 +292,6 @@ function HighestRecord({data}) {
 }
 
 function RecentRecord({data}) {
-  console.log(data);
   return (
     <View style={styles.recentBlock}>
       <Text style={styles.bold}>최근 러닝</Text>
