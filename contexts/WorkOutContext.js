@@ -53,7 +53,6 @@ export function WorkOutContextProvider({children}) {
         pace_2: paces[1] || 0,
         pace_3: paces[2] || 0,
       };
-      console.log(data);
       const options = {
         headers: {Authorization: `Token ${token}`},
       };
