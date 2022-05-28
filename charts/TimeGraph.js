@@ -11,6 +11,7 @@ function TimeGraph({data}) {
     });
   };
   generateRecords();
+  console.log(records);
 
   const records2 = [];
   const generateRecords2 = () => {
@@ -18,17 +19,10 @@ function TimeGraph({data}) {
       records2.push(item.cnt);
     });
   };
-  generateRecords();
+  generateRecords2();
 
   return (
-    <View
-      style={{
-        height: 120,
-        backgroundColor: 'white',
-        paddingHorizontal: 24,
-        marginBottom: 24,
-      }}>
-      <Text style={{fontSize: 12}}>참여 시간대</Text>
+    <View style={{height: 120, backgroundColor: 'white'}}>
       <BarChart //bar chart
         data={{
           labels: records,
