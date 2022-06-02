@@ -29,7 +29,9 @@
 - @react-native-community/async-storage 1.12.1
 
 [Geolocation API를 활용한 사용자 러닝 실시간 트래킹 구현](https://velog.io/@eunddodi/ReactNative%EB%A1%9C-%EB%9F%AC%EB%8B%9D-%EC%96%B4%ED%94%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0-Geolocation%EC%9C%BC%EB%A1%9C-%EC%82%AC%EC%9A%A9%EC%9E%90-%EB%9F%AC%EB%8B%9D-%ED%8A%B8%EB%9E%98%ED%82%B9%ED%95%98%EA%B8%B0)
+
 [로그인 및 회원가입 구현](https://velog.io/@eunddodi/ReactNative%EB%A1%9C-%EB%9F%AC%EB%8B%9D%EC%96%B4%ED%94%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%82%B4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EA%B5%AC%EC%A1%B0-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85)
+
 [moment.js와 useInterval을 이용한 실시간 타이머 구현](https://velog.io/@eunddodi/ReactNative%EB%A1%9C-%EB%9F%AC%EB%8B%9D%EC%96%B4%ED%94%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0-Geolocation-%EC%82%AC%EC%9A%A9%ED%95%B4-%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%9C%84%EC%B9%98-%EB%B0%9B%EC%95%84%EC%98%A4%EA%B8%B0)
 
 ### Design
