@@ -48,8 +48,8 @@
 ![image](https://user-images.githubusercontent.com/87167786/171554381-30df598a-ee5d-4d77-aac4-cc51ce156b20.png)
 
 ### 대시보드 화면
-![레이스1](https://user-images.githubusercontent.com/80682955/175816639-185101a6-b9f3-48ff-8c03-974d08802995.png)
-![레이스2](https://user-images.githubusercontent.com/80682955/175816694-94c88fc5-a4b7-486b-883b-469bd64b4436.png)
+![레이스1](https://user-images.githubusercontent.com/80682955/175816639-185101a6-b9f3-48ff-8c03-974d08802995.png)  
+![레이스2](https://user-images.githubusercontent.com/80682955/175816694-94c88fc5-a4b7-486b-883b-469bd64b4436.png)  
 ![레이스4](https://user-images.githubusercontent.com/80682955/175816644-e10b22ef-4303-4269-8db9-9419fdfd9554.png)
 
 
